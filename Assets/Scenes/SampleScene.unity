@@ -370,10 +370,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   midiInput: {fileID: 825923342}
   sampleBank: {fileID: 11400000, guid: d454f475c0bc22a418dd886d110f8ef7, type: 2}
-  backendKind: 1
+  backendKind: -1
   maxVoices: 64
   requestedBufferFrames: 128
   initializeOnStart: 1
+  preferredOutputDeviceName: Focusrite USB ASIO
   sendNoteOffWhenReleased: 0
   releaseFadeMs: 500
   logDiagnostics: 1

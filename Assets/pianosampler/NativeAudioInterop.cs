@@ -6,11 +6,13 @@ public static class NativeAudioInterop
 {
     public enum BackendKind
     {
+        Auto = -1,
         WasapiShared = 0,
-        WasapiExclusive = 1
+        WasapiExclusive = 1,
+        Asio = 2
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct EngineConfig
     {
         public int sampleRate;
@@ -19,6 +21,8 @@ public static class NativeAudioInterop
         public int backend;
         public int requestedBufferFrames;
         public int releaseFadeMs;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        public string preferredOutputDeviceName;
     }
 
     [StructLayout(LayoutKind.Sequential)]

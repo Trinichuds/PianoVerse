@@ -9,10 +9,11 @@ public class NativePianoSampler : MonoBehaviour
     [SerializeField] private PianoSampleBank sampleBank;
 
     [Header("Backend")]
-    [SerializeField] private NativeAudioInterop.BackendKind backendKind = NativeAudioInterop.BackendKind.WasapiExclusive;
+    [SerializeField] private NativeAudioInterop.BackendKind backendKind = NativeAudioInterop.BackendKind.Auto;
     [SerializeField] private int maxVoices = 64;
     [SerializeField] private int requestedBufferFrames = 128;
     [SerializeField] private bool initializeOnStart = true;
+    [SerializeField] private string preferredOutputDeviceName = "Focusrite USB ASIO";
 
     [Header("Behavior")]
     [SerializeField] private bool sendNoteOffWhenReleased = false;
@@ -22,6 +23,7 @@ public class NativePianoSampler : MonoBehaviour
     private IntPtr engineHandle;
     private bool initialized;
     private bool pluginAvailable = true;
+    private bool initializationAttempted;
     private readonly List<float[]> scratchBuffers = new();
 
     public bool IsReady => initialized && engineHandle != IntPtr.Zero;
@@ -61,6 +63,8 @@ public class NativePianoSampler : MonoBehaviour
 
     public bool Initialize()
     {
+        initializationAttempted = true;
+
         if (initialized)
             return true;
 
@@ -83,7 +87,10 @@ public class NativePianoSampler : MonoBehaviour
             maxVoices = Mathf.Max(1, maxVoices),
             backend = (int)backendKind,
             requestedBufferFrames = Mathf.Max(32, requestedBufferFrames),
-            releaseFadeMs = Mathf.Clamp(releaseFadeMs, 20, 4000)
+            releaseFadeMs = Mathf.Clamp(releaseFadeMs, 20, 4000),
+            preferredOutputDeviceName = string.IsNullOrWhiteSpace(preferredOutputDeviceName)
+                ? string.Empty
+                : preferredOutputDeviceName.Trim()
         };
 
         try
@@ -130,7 +137,8 @@ public class NativePianoSampler : MonoBehaviour
             Debug.Log(
                 $"Native audio backend initialized. backend={backendKind}, " +
                 $"sampleRate={config.sampleRate}, maxVoices={config.maxVoices}, " +
-                $"requestedBufferFrames={config.requestedBufferFrames}, releaseFadeMs={config.releaseFadeMs}"
+                $"requestedBufferFrames={config.requestedBufferFrames}, releaseFadeMs={config.releaseFadeMs}, " +
+                $"preferredOutputDeviceName={config.preferredOutputDeviceName}"
             );
         }
 
@@ -254,6 +262,9 @@ public class NativePianoSampler : MonoBehaviour
     {
         if (initialized)
             return true;
+
+        if (initializationAttempted)
+            return false;
 
         return Initialize();
     }
