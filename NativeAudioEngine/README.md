@@ -1,39 +1,68 @@
 # Native Piano Backend
 
-This folder contains a Windows native audio backend intended for low-latency piano playback outside Unity's normal `AudioSource` pipeline.
+C++ audio engine for the Unity MIDI piano sampler. Exposes a small C ABI that Unity calls via `DllImport`, accepts PCM sample data uploaded from `PianoSampleBank`, and mixes active voices in a dedicated render loop.
 
-## What it does
+Supports **WASAPI Shared**, **WASAPI Exclusive**, and **ASIO** output via the [JUCE](https://juce.com/) audio framework.
 
-- exposes a small C ABI that Unity can call with `DllImport`
-- accepts PCM sample layers uploaded from `PianoSampleBank`
-- mixes active voices in a native render loop
-- targets WASAPI shared or WASAPI exclusive output
+## C API
 
-## Current status
+```c
+np_create_engine()   / np_destroy_engine()
+np_start_engine()    / np_stop_engine()
+np_clear_samples()   / np_register_sample()
+np_note_on()         / np_note_off()
+np_set_sustain()
+np_get_last_error()
+```
 
-This is a best-effort backend source implementation and Unity bridge. It was written in-workspace without a native compiler available, so it has not been compiled or runtime-tested here.
+See `src/NativeAudioInterop.h` for the full signatures.
 
 ## Build
 
-Use a Visual Studio Developer Command Prompt or any shell with CMake and MSVC available:
+Requires CMake 3.24+ and MSVC (Visual Studio 2022 or a standalone Build Tools install). JUCE is fetched automatically by CMake — no manual download needed.
+
+From the **repo root**:
 
 ```powershell
-cmake -S NativeAudioEngine -B NativeAudioEngine/build -A x64
-cmake --build NativeAudioEngine/build --config Release
+cmake -S NativeAudioEngine -B NativeAudioEngine/build-juce -A x64
+cmake --build NativeAudioEngine/build-juce --config Release
 ```
 
-Then copy the built DLL to:
+Copy the output DLL to the Unity plugins folder:
 
-```text
+```
 Assets/Plugins/x86_64/NativePianoBackend.dll
 ```
 
-Unity should then resolve the `NativeAudioInterop` imports automatically on Windows.
+Unity resolves the `NativeAudioInterop` imports automatically on Windows x64.
 
-## Suggested next validation steps
+## Source files
 
-1. Build the DLL.
-2. Add `NativePianoSampler` to a scene object and wire the same `Midi88KeyInput` + `PianoSampleBank`.
-3. Disable or remove the old `MidiPianoSampler` on that test object so both backends are not triggered at once.
-4. Test `WasapiExclusive` first with wired output.
-5. If exclusive mode fails on the target device, switch to `WasapiShared`.
+| File | Description |
+|---|---|
+| `src/JucePianoBackend.cpp` | Active implementation — JUCE-based, supports WASAPI + ASIO |
+| `src/NativePianoBackend.cpp` | Legacy WASAPI-only implementation (kept for reference) |
+| `src/NativeAudioInterop.h` | Exported C ABI |
+| `CMakeLists.txt` | Build definition; fetches JUCE 8.0.12 via FetchContent |
+
+## Backend selection
+
+The engine selects a device type and name at `np_start_engine` time based on the `BackendKind` value passed from C#:
+
+| Value | Behaviour |
+|---|---|
+| `0` Auto | Tries ASIO → WASAPI Exclusive → WASAPI Shared |
+| `1` WasapiShared | Forces WASAPI shared mode |
+| `2` WasapiExclusive | Forces WASAPI exclusive mode |
+| `3` Asio | Forces ASIO; matches preferred device name substring |
+
+Default preferred device name is `"Focusrite USB ASIO"`. Change it in `NativePianoSampler.cs` inspector or in code.
+
+## Voice engine details
+
+- Up to 64 simultaneous voices (configurable)
+- Pitch-shifting via playback step: `step = srcRate / outRate * pow(2, semitones/12)`
+- Velocity gain floor: 0.2 (soft notes never go fully silent)
+- Release fade: linear over configurable duration (default 150 ms)
+- Thread safety: recursive mutex guards sample bank access from audio thread
+- Voice stealing: oldest-started voice is reused when the pool is exhausted
