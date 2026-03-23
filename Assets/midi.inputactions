@@ -1,0 +1,57 @@
+{
+    "name": "midi",
+    "maps": [
+        {
+            "name": "New action map",
+            "id": "8145672d-4cc3-40fe-a1fd-6662e3afee3b",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "22cb87a6-6368-4aa4-8b1c-202e09fe42b9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "08ebe07d-827b-49f3-9f4d-cd0a4f78d30e",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "048021ba-11bf-4f9d-8d30-1940e6c817e9",
+                    "path": "<MidiDevice>/anyNoteVelocity",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";New Control Scheme",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "New Control Scheme",
+            "bindingGroup": "New Control Scheme",
+            "devices": [
+                {
+                    "devicePath": "<MidiDevice>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

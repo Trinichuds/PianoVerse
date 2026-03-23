@@ -1,0 +1,3 @@
+C:/Users/liuja/My project (5)/NativeAudioEngine/build/CMakeFiles/NativePianoBackend.dir
+C:/Users/liuja/My project (5)/NativeAudioEngine/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/liuja/My project (5)/NativeAudioEngine/build/CMakeFiles/ZERO_CHECK.dir

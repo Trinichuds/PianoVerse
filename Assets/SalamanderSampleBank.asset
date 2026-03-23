@@ -1,0 +1,1631 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7eec59cbf19b7f4ab89275d9b6c779c, type: 3}
+  m_Name: SalamanderSampleBank
+  m_EditorClassIdentifier: 
+  keySamples:
+  - midiNote: 21
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: b8bf4db912adc3d41acd7d6201a9e82f, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 080b9ce1600a8fd44bd0946bfbd0034f, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 6594c2795b118fe4d984c13792670f48, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 9901657b3de377d4b82fa0cbb2424c19, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 90b653dc06ac63641818eba69d860062, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: eb0d355bfd8084e44b51cdcbc0a1eb9e, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 482c150c515f13b429c89f5f55fac4ca, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 840a191165334b44995d16056401bcd1, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 4d1d470332a89764d952a621df34549c, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 2b4b4b9c42a4ce24796ff13fdf33e9d4, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: b75cbc9ca7a6fd143891702808497c21, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 7476c757d19ee1c4a827497072dca346, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: fc7e65f58371f5a4cbbb6aaaec42c1f6, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 71b1a76ae7dcbb14bbdc3797d4ae1211, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 7e49040ff362f2f4187dcba7d5088b5e, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 53d272ba20d759d4490c8dbdeae24486, type: 3}
+  - midiNote: 22
+    velocityLayers: []
+  - midiNote: 23
+    velocityLayers: []
+  - midiNote: 24
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 3e3ca7915e7c4184e95290dd5c27da24, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: ebe1b0339cc54b54eab2d8892c07adbf, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 5527a75b2826ab64f8a67fc4fe98d08d, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: f63c7d6b3318cdf40ad0b406a4be97eb, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 36fdf227e65057a4da7320a2916dc79b, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: ac5250ecdb9035d4097dacc1c98c88f7, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: a3814b8a62ac8064bbbe464ae96b09d2, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: e269db0bb003c3c4488f677e7e1c3580, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 5ad71dbd63c62564cb08e0e094c1c1c5, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 421ca5caa4fb6fc4b971310bd0a3c8f0, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: c01e6b74923339845ba1e18d4288b0da, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: f186fd2adaaf7a748ac00b2db5659468, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 8365931e63c592040867e1eedeb9043f, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 270ca157f60c76b4eb2f08b2494973ac, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: b2cbef13ed17da54fa3ec04a1e2028b0, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: ab3dea6a61d2c974daece7ff6fc8566b, type: 3}
+  - midiNote: 25
+    velocityLayers: []
+  - midiNote: 26
+    velocityLayers: []
+  - midiNote: 27
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: c4ab9141e6ec8f64584b846761528fc1, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: ad86ec670b0f07d4680739099a2a8a2b, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 290c199cf14192e4786cc5d03ee43023, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: acb74c27ee04c1f498d5679bc818431a, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: d010ba82388d6d046a1bf0abbf40eb7c, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 7bd7607dbb9ce8e47a0434ec1cabee74, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: e1cb67e782b352c4297a662954f44667, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 3da7d3a5598c68142a8f66de3e289b85, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 888fc5c5c3a537546988e9be530a4bd7, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 4cdce9ea5af0510408ac5550bfb5bc3b, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 3fbd4984aac86394e869bec54cd4a245, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: fca7b042ea772394dae45466b0c63303, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 907463c5b15c71040b71b4b785faa995, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 8fbed9684eb21c44d8f5f4fba4f90423, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 707b09d658ac8c84cb7b1c2a0d54b6f9, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 4be378b168913444fbc4bc283019a192, type: 3}
+  - midiNote: 28
+    velocityLayers: []
+  - midiNote: 29
+    velocityLayers: []
+  - midiNote: 30
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: f59575693de69974f90b4232c477bd2e, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 832517a6cb4a4364c82a3c9ca0ad9448, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 972584a93fdd211429c9eaec5c9a3b4f, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 458492c8ac7b10d4b96ad08682ce31d5, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 782acfdf509d50e4fb72189a0ebfa9e4, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: f9a0e25cdb056ea4982ebac99f177e41, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 5a64da16f4d1b744792dfe071e1dee3b, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 1fe811ae2166e7648ae078ab4a18146c, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: f1d1f6facf0cc0741a1cd76fef2e6445, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 32f405b5da2ab404ba65e72c6af16e68, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 3488377bbb9b3ef45bc793158e44ccaf, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 215c409063f7e2f4a8ffeb6ac536f3f8, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 8958fa6155fdcb048949220f2355503b, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: b1a6dc2effad0b34d853a68c94c47919, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 3c3a9020fcd7e9f41a753ec269ef9403, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: df1bf42777c52d04eac5e75975017056, type: 3}
+  - midiNote: 31
+    velocityLayers: []
+  - midiNote: 32
+    velocityLayers: []
+  - midiNote: 33
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 2c7a5af0847888d4c979363a0e1175c3, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: d5d1a7610b3b9254f99ae4f339255931, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: de2c3c8e4b899704381bc8e54ab2d829, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: b170228ea8c7ca84084f35e6b3165337, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: d9f4bda5e2b88b545821b6c0afb29921, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 936674335bc9ad243885fd6b9d17e9c6, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: cbd2a979c56397c499d2182c8d47058d, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 7a73705e4e9ecbe43815ac94f086981f, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: d881599a503135e42b9e06e62d380a7c, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 0733776f29aea64439465aabb130c811, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 2506136777d0bdf4f9e326f73bad6162, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 82716d6c0d4d4da4386f7106b12fc864, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 11dc88a90b0b41047b4f4b96b6bb709d, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 41b200be04c95694d8756d46af29dd09, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: f31ec56744035f545a4fbd16f92db219, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: f492c1f8b49d9f144b080b439a909313, type: 3}
+  - midiNote: 34
+    velocityLayers: []
+  - midiNote: 35
+    velocityLayers: []
+  - midiNote: 36
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 6bda72266832fc84cb33c38afe675739, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 7ca32421833330e419d88b3c71588da1, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 65f9348c789ea8a4b8e9c9b0e8f7ab21, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 929e1a62c351598478690ac78c5768ff, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: fafed7a41c513124da1879f3edd7fe33, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: cc770543f9862d44f9fad24ccc85bb7e, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 8b392d633b2ee634fbc1662fc7555660, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 340a48b98155dd24abc6de9036919d87, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: cc349258a11c4d94682c42871bf6179c, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 9df177b5098cf2846a612bc5494b9021, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: b09cb2e18e93e1c4abdddb934ecf9f2d, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 47ee588499f141942ad26cf926774fce, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 40f159b1e8c63314ca10dbe4968d1757, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 8f426e221d9d8224ebbf237c9e1d3b8e, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 8b905d6ed3f7f304299e4fb567099184, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 43d068deafce17440ac87d78051ce731, type: 3}
+  - midiNote: 37
+    velocityLayers: []
+  - midiNote: 38
+    velocityLayers: []
+  - midiNote: 39
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 6421481a916b53f48a6dafc00ff56402, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: fda9ee6d1d1f6fa45829ea4f509cdae1, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 72760eaf6931cf247a5de8efcf992fd0, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 1a08b095a59d930449728f09cec3f11e, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: b4713943f3a873d459a0117ecc888df3, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 350e5d23ef52f4746a19256770e6a16f, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: a9d99ddbd1ac4694cbfd48ee15b94109, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: a10b8bf342506ad43bc647b215aac549, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: de1c377788bfe3941acca690ad1f30ba, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 0a11ceddcd08a7046aa8e8e2f2dc7d1e, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 61b7c7a1473da2d4e953b0eda724bcd3, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 8698a4d30ef2ad6479979eeeb53b885e, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 5748fa54117937443b5b5d008cc9340b, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 6811d8e9ee8d8214a9b5b91be0fa03f1, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: b3c9e91214a4fb749b269ac81470456d, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 92da7a391ee13fb4fbc9b50cb3dcdcec, type: 3}
+  - midiNote: 40
+    velocityLayers: []
+  - midiNote: 41
+    velocityLayers: []
+  - midiNote: 42
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 693512db19dbc7f4386f2bfd2a751174, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: d518cf054ad922948875b9109d921715, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 7c50c45dbd75a1940adb5df1d3f97cbe, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 839984afea2fa484c90198a3dbe64ee5, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 7731b3912cb0090418df410117e82a03, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 12283b985b53dce4598956215737b626, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: ebb8699a2a4c4f24780f0e0b43e0118e, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 4a19e1b8ae2061246b3a72ae31e281d0, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: e6d6e65cc74a66d4b9a7d0ad6140108d, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 76e3501e530b9a942b5d03226fac400e, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: b8d994fa42a2c0b4dbc9a60ff54a632a, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 83d0ba93d60742d4f9ca402aeb7478f2, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: bca7d41a89e97724fa7e19f0d4051c25, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: d620d66efb652eb4d94abd310e473a23, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 29e887c33cb4320419877c948cab740f, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 43bcd84a45cb7d241943a161111b34ab, type: 3}
+  - midiNote: 43
+    velocityLayers: []
+  - midiNote: 44
+    velocityLayers: []
+  - midiNote: 45
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 204ba5a6a6dfb3247bd2c2fc7400a792, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 2bb705a160dc5dd448a1984b5213d342, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: b97bfedaee65c5044a52621d89058795, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: c4c3c5f18c852ac438a14064f18f6423, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 934e35ef894f58d418d3e55eb52d986c, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: fe26cd285c8f1e34692c8aa73ffeded7, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: b49d5fd20ee756b4eafd00093026fa07, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 36ca480f9ccf95b4389a171aa4eaa048, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 56b9f02654bdcec4c85a2d9eb63f512c, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 0c24d32f3932f124584d1b76faf881ee, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: b6bd49015124d504fa78650ad95e3546, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: a9bd20226ea3d64499fb5ecc62d7dedc, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: f6b37e22ff7ca3747bd366d5984012db, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 144e038fce499624e8128ce9a948e4b4, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 66d9fd5a2697fb44298be4f7b190b979, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: e44b9bc3f9db8eb42acf4700b1d0d628, type: 3}
+  - midiNote: 46
+    velocityLayers: []
+  - midiNote: 47
+    velocityLayers: []
+  - midiNote: 48
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 8920fe7bfc7bc4c4f8cd186916e793d3, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: e725693acd16cc744b3bd8c2b61c90ce, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 13cfc0673be41c14589d901d622def91, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 4f270d4a9d1f9b849a65d7b2c0b728c0, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: c392c133b3ac21340bf1d3f19d384564, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 550cc96b0c7534943a2e2c86e4df0276, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 2686ba18f604fd44aa9500f05ad71414, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 3d3cf3c278dc72941be0a164cb925338, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: a6fddde5fe70d854cae0aeb0aafe6ef5, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: e761847802108b4459b27089b018f5c7, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 8d17e4176af70e84ca5737aa559f4577, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 206ec5d81a43e1143be4eb1a3c1b11e2, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: a6679d3a25fec7d42b159f9fb236ead4, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 4297e710c7eaa094f9a88ee5b0317e8b, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 696030410f7cb0841bb203bb4fb60234, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 6e6541d0f91c797469be68b4e8c7f275, type: 3}
+  - midiNote: 49
+    velocityLayers: []
+  - midiNote: 50
+    velocityLayers: []
+  - midiNote: 51
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 8a297284453c57143a1fa6af7c67bc7f, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: d407ab2f20828be438e9858ec71afc7d, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: acbf7542763e350419f01c64e7a97ca4, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 87ff8b645ce8afe4fb23a93eb3691ae7, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: f015f09a505d06145a47ddcb309ef2cc, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 9224a81a78cb3f44abf3180df63c741a, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 6328bc225e1118545a66e5440eac93b9, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: b4eb2087f50b5aa489f1903b6a28182f, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 5937336070260c54698868ba74f63579, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 2d40d4baab3703f41a7e3e2f8b9f2109, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 3f1df88735b7da74e9b440e87f06f9f7, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: b3f6b2f5f2f59044c9372478a549274d, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 9419fd493f3eea247af21724898016d7, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 366f11492c87c2d47b91c5f4b694d37a, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 057b00086a56577459f365ff46fd71c1, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 9fdec72243dadf346a1bdc2f45e63fed, type: 3}
+  - midiNote: 52
+    velocityLayers: []
+  - midiNote: 53
+    velocityLayers: []
+  - midiNote: 54
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 6fd28076925e3094abbd1daf2f81f779, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 1d665fe8be5fc64428f99644d3d19ed9, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 202b2508394ce024f8cf346cdf787659, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: fe929ec5d81bfef4fbeb2ed767ecf861, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: cf88d99991ec6c743b0b073169fa3255, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: ba22700ba9960fe4cbcf4a198e5200b9, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 27a09733701f0634ba69afa119feb81b, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 4bd6c536ebef5a34383d996fa04b8b33, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: a450c8938ca2b554dacda776e7353432, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 0fa087d0bd808474c997b2ad9406136d, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 63b5315e762a7af499eec81fbe0841a6, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: b7f5b8ebb44e97146a63f0a7c210e095, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 4d3a8193d59091e4a9ee63965b0bd609, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: b390529cfd260d84e890a867a21122d0, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 513ef930affa27a4b9fa628ab57e7c6f, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 4e16f99809703f747b99360fe85457eb, type: 3}
+  - midiNote: 55
+    velocityLayers: []
+  - midiNote: 56
+    velocityLayers: []
+  - midiNote: 57
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: a45fd33ce02a0f94fb37286c745c7c89, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 22c19504d36257541adeed15fe2b000b, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 8d4f719cb2526ed4dbb86157bfdb7581, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 7fad13ba27b93ba4c98744b1549b74de, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: a5d55aba3f284d0448b21b7f3d15f629, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 049d57d99d7bf644a8086e91170c20d8, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 182d9c33c0d3c8949b76bece74ffff63, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 7dc872cd23711f64896d4bfbe565f0b3, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 7c9f0605d271be148ac349d69e7c0719, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 45dc13a8eb49ed3478cd681b1062d39d, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: cdd7001a3b39f6343bc4e7483d35ee60, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 03e3397b267c50648b79b1042e9883d0, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: a5cd26ec64c235f43b1d639318501e8b, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 42b3bf85668348b44ab8883217741a6c, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: caa93d067d851bd40a6e62230bc4bb8a, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: cfa58ca9f81f5084a83f686351f1daa0, type: 3}
+  - midiNote: 58
+    velocityLayers: []
+  - midiNote: 59
+    velocityLayers: []
+  - midiNote: 60
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 68fa5e522fc994843b9c05efdc5b35d0, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: cd9cdb58e97235a44ab1125514df3f39, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 5e6256e7f7c70eb428da3771762fe61f, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 56a879268917c3348be1606c3434d7ef, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 8a16def9b8ef9cc47919b5b77f292131, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: f7ca2b8523830804aa7bd2321f8b21f4, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 4df5c15227b176141bd2443aec92cfc6, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 6ef5684430ee57d48b05e048f5c6bd65, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 8f88daa816da6aa48a39342d236aaeb2, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 73b0be08a68b5854381dd59dcf1f2e15, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: a4571fb29354d1a46a4be8f293b188c3, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 6df644bf8c2973743b2e01863e72a655, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 188104073d707774999a9bf6e7e5fdbb, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: b77f02bb372f2de43b6e1a74cf843a7e, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 3e7db37adb503f64bab4c6957ed61db1, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: f9862f7cf260a0d438b9b28de1c1c0d8, type: 3}
+  - midiNote: 61
+    velocityLayers: []
+  - midiNote: 62
+    velocityLayers: []
+  - midiNote: 63
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 428cf379a6e3325458b92025b4d2b733, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: d86b05ec451f69844bd83932ab792d5a, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: d733ccb4527ef784db5b0c72e3330c0a, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: a581f2ead367a7d44958faa6d0a09576, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 93267f88e7e1ab742973e6f32d367840, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 8733c51fa9308934884844ffbd1bac3e, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: aea9c87c1f4529c4e8109bf636551ff7, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 676676ba2f0cf7a458ba9cf026381b10, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 06853e6a4a5b9694bb2142b96b4e564a, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: d65967f2e902e884386494a1f6f1330a, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: ee93fec7c10f0904fa44cfbb2eeef76d, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 4eb582299fb118946bc9abef8d24f275, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: e8bada749750b7f43acf39a7e5a07013, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 7f276ee9dbe68bb48851375bb1ea08e1, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: bef1553b407a14a43a76a7e11c67b73f, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: ae7015efdd4c3e948b281c4313841167, type: 3}
+  - midiNote: 64
+    velocityLayers: []
+  - midiNote: 65
+    velocityLayers: []
+  - midiNote: 66
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 9d221ebaad078ab47ba75428caba8020, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: b8e4f09456c236443b6dc1ad6fdcad6c, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 28ee83cbeef19014b9be0562f472ffd2, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: e479308ce0681e148a02675af77320a8, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 7c59791e8a430bb499b93e2a4bc94f5a, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 94efcdfaa09ae644e89235d0751d00bf, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: b548848a45ea52b47af7cbb57eec8716, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: ae0c32f072e55b341934401719553e2c, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 6f92a0f4151d07d4e93de7f4098a3b68, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: dd8642436c8239d4795a95c2e8b08257, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 1f69602f666d4ff4aa1d375a25948e95, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 472a8a56ac6ab334e9a63ffc95f98991, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 1dd277cc4ae835d46a02c68a66b1efcf, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: b898a7e78912ae940b9dd12473ef6b5a, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 8f1f00d7d3eb00341bcbcfea320221f6, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 14557d2f4d6d33646b1ffc94cbd95656, type: 3}
+  - midiNote: 67
+    velocityLayers: []
+  - midiNote: 68
+    velocityLayers: []
+  - midiNote: 69
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 5ed90e614906d3b4081695c5892f8a1d, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: dd42a353b9756744f81c5f8ddf436057, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 5208dac56a9145f4fbcd9703a3a78c0f, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 281ad96d171dfe54bbeebc5d541653f4, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: d09842433487cad48ad4ddeba4336e00, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 29264c4656dd9c34ebcca7e023685cc7, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: f33ecdbd8db372f468676b35c95dc260, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: da91402ce5e9f2f418d1b3f27d41df23, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 7c4bbf8f522dcb1419b853b6c3ae7602, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: d0217816e2d8f274286c1f008662567b, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: d13f5a5872e361f4ca6ff89ccb82b535, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 9bc4981be2536be48ac6eef502194abb, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: f08183dc6eaea7d48945c63b773dc1de, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 0d10f1eebcce4ec49af9758c84edf190, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 28a0f3098ec82554696d2eb7f9916b14, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: e7a731741fe7cdf498a608ee7076f2fa, type: 3}
+  - midiNote: 70
+    velocityLayers: []
+  - midiNote: 71
+    velocityLayers: []
+  - midiNote: 72
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 37e5202aa1484824cba9d11f9019b898, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: fd435dcd48a2ece41952951a2f9806c8, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: fad5a983432cb694d9bceaa037412e92, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: a981de22f33da894ea7bceeb0283a14d, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: cd835720fa17e604db7168ad10ec576b, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: a2f72a6c97634ff42b67f16c3a25a3d6, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 10ec6e8b24a785e47bcf2f93edb7e068, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: a79a4e5db20828c4c92a708cf4fe27b7, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: c91d6d620c59efa43a354309aa356c6b, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 6e58e0f6dfaf7c844bc160ba5d7bc482, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: af168da9e587a4f4ab4637b4a0d5913a, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 91f6877ae4db8724e94138b6b0382905, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: d322f64bd9e8ea14c8f968d60c6ac452, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 34df528fdcc5df1429ecaa04e7428ce2, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 8a25d95bab1e05b44b1105c4069e1f89, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: c6b050bb83e0d0848aa5c81a436036c4, type: 3}
+  - midiNote: 73
+    velocityLayers: []
+  - midiNote: 74
+    velocityLayers: []
+  - midiNote: 75
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 16412a578bf37044d8d26dfd60a80c2c, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 9a55ab67f83f3e04b9cd12597a5c5fe0, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: c4b681c3d196f384e911d2affa8f544b, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 8c1ffc4c67050af4e99883b8babefc06, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 0df67f17e02662a47aaf6e57fa8f70fc, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: a2c9a96ae15a616438e6d4260fcc89f0, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 80c0d2a5987ea254ab8792c2ab38c2b3, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 064688ba65e699d42a9310710747d816, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 8eb02ef8df61fd64286dc305951695b6, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: d920614ae2d6a7e4791fec3024c94f93, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: ae24b2840c5314348a84583130af3ef9, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 5030c496bc17c6b44bb708ef22b2ecfb, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 11390e2cfb3370a48b33d64a60111bf2, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 9682df5132f54734db4da5e6705b38c4, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 58498d8039e192a48bd169027a4192c1, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 7f2fa23dc515c9247ade58372773817a, type: 3}
+  - midiNote: 76
+    velocityLayers: []
+  - midiNote: 77
+    velocityLayers: []
+  - midiNote: 78
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 0609b1e6aa209d24bbeefd0d113fb09d, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: ced1c5459f100a74491a6d778bfa8f8d, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 8702e2315e6623540b1e34ef37755590, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: d166362bedc1dae40870e7364f799a6c, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 87e9723e9419b8746b7200b1d6bb511b, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 46dd21f89c8605345ab559285f75eec0, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: fc10c289f33b94943b345d1bd171a874, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 4c3626eb0a6fae842a0030e4f5c027ed, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: d5aa07e0e0c43bb48bda599dae3b8b55, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: e640029359140f14284f44b36cf1ad19, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: c2b47fe9d58b1b449bb8cb0bcc66c6ac, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: a8a32fceb72e22241a74a940c3d3f406, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: cfe2de113fd77fa41be4c8f82896d069, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 6d24927e3d3b57941bb1ab318aad893a, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 75bb0e27890b5fb48ae62af6685963dc, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: af0d8e7fbfb157a4788a26ba605b2c08, type: 3}
+  - midiNote: 79
+    velocityLayers: []
+  - midiNote: 80
+    velocityLayers: []
+  - midiNote: 81
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 153032559e587ee47b7758a3d5ce1b6f, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: ad8fbfd59d72f6c40b50aab70a802dde, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 80dbe065193a96549936e8f80946cdfe, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 5b9813bc81666d545ae8762cb66c86bf, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 08b1eccfb98ca1d48872016f5aa46d55, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: e4709d67b8d7bc84ea44db1e75872a92, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 10d07ec012facf840a3bd2b6e9a4f1a9, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: aadf773f706bb9f42915ee904bef1550, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 4e275a749b1fbf7479a878451b7f861d, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 1ac12fa89140d424caf660c5609c0ccf, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 2b106d48cf8e5664bafe23b96372e571, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 516e40f3e458f714e9a544c6f23082a7, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: a06433725b81e3a488a3b3b343f8535d, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: fe68c0bf0dc38a940af4ff4da1222f70, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: ccffc43dac2719e44b0b01d26c7d76f3, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 7906ee826b2805b4aaaba28e28ceb865, type: 3}
+  - midiNote: 82
+    velocityLayers: []
+  - midiNote: 83
+    velocityLayers: []
+  - midiNote: 84
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 4612feeec96843a449ee086f366f7e3c, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 35acc9fdeb30d2c49a237e0fabb1a666, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: bf14c97476d903a469ca1266079d9323, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 27b7e99f00220b743b6fa4f8c7c7439f, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 4ac858055748daa4497f8924e2eb7d34, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 7131ecffaf092c7409bedc88ff4c8b06, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 2c03649151a60c14ba26fc2f28f9d5d1, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 8af98860f60240f41a8bbaaccf834ae0, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: fd4b57a4c6b1afb45bf25a7c73e63178, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: f96b3eed4d5ef3a47ad29da63e03d055, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 95bed08d01ca44144be94b7098d83135, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 27b93811d4e949743a22db0f6a102988, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 0acd5f19e34c0684ea57e0fc97694f77, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: a2d69881c389e5c47b7e5a2dc082c71a, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: c6666e63643f69d4796a668a173c1a89, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: b075e51a8d7a5714eafba9dac5488e04, type: 3}
+  - midiNote: 85
+    velocityLayers: []
+  - midiNote: 86
+    velocityLayers: []
+  - midiNote: 87
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: a1853c75a6d888b4b864e2fc22c98740, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 093ac5d564656b34b940766b7402c5b5, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 8b52d486ae2e3e44cb276679cfa00739, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 4a2cdee67c61fd04ab23b3fe77f3b216, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 842e4c182cb5f5149b126838ca148d23, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 7efd44305e117864f9555dd2a5d1e773, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: e3d64c9b2de2d5941a20577e44bfcf55, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 655b9337bfde6e64eaa0e96bc75e9d22, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: c120bcf5526ed4346a3d9620309bf98a, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 8393431054e380548bdbe922952c70d2, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 416ebd265393c484fb9f52d12e918d6c, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: c526e895393eeb44994cfc7ce1c85c40, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 06a9757d4b2caa647a6c3ae44f612410, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 2b30dbb8a2b1ef245bb22ecf5e3b16b8, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 24e406980d5c05c4b966dc87504dcb61, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 2e937980e08a71f4ca7d344f23f0e280, type: 3}
+  - midiNote: 88
+    velocityLayers: []
+  - midiNote: 89
+    velocityLayers: []
+  - midiNote: 90
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: b3f0f948063df324185a4af7c77517f3, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: e98d98c379359654e92c07bf22321bd9, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: ab54174185915ef48b5516b41cb4794a, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 45bca9e61ace3a34a9f0fced424a3bad, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: d2ac6dac35278dc428d1b04c59a5d085, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 9d1bc64fee45c6f49b32670d0d82c93c, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 4b6e91fba1782654c9b22ec503144324, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: b49c458184b1ce84ba772088d9816bcb, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: 73fb2de3f3ef1c941ad063cf2ab87d9b, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 78ae86ebf1e3f8646ab2ecd68fe8fc7d, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 9f89c239d1650fe48b76129d12bec59d, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 0039232761c82524b81deb143dab895e, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 36a1196af9274d34f83a9ee307bfdaa9, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 041701e9de93c3744937db427aa179a2, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 00c5be7194c7c774884c970cfeef4795, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 6e900e00ac1c4c7478c609136e1a80e7, type: 3}
+  - midiNote: 91
+    velocityLayers: []
+  - midiNote: 92
+    velocityLayers: []
+  - midiNote: 93
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 79392e04f18ee9e48a3a80543b1f1ee1, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 0044105fbcca6294da16a6c201037fe3, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: e0b63a7ba6e799e46b572eef02bcad22, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 7fc01578988c40841a2ceffef30c2963, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: cc90c8a97da246b4a8c66addf77deb5a, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: b8dc2094925bc7743accadc369f63b30, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 379d75f2f47e73344a3bda280c81a841, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 3d0cb9b4fffc2d146bf7d2b1c5a2aae3, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: d7bcccbfacc536a4b83d97cffbd66521, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 08dd65565eba52249b75b040c7ee8b2a, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 0ede8742eacacaf45bc92fee7d88dc59, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: b7c23df7ff81b0f40be842a9deff7451, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 00409592ffa896f4483973a14e5557f2, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 1f3374827f48e4241b80a805c75baf5a, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: e8998bb937a206b43a2fcd6a8662156c, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: f2ba197f48d03b846b6291d42aaa954c, type: 3}
+  - midiNote: 94
+    velocityLayers: []
+  - midiNote: 95
+    velocityLayers: []
+  - midiNote: 96
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 48f05ab46dfef0e44ae499f2022f0560, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: ef8235a88f7f09543941055e17712142, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 5f1d2d393eacf864782ea3bfbf9ad7b4, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: a0c7e320d998a2948b80d29d93db71cd, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: ae69ffcc460da8e4bbdaf31ad4b46748, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 99986832bfab3a743b262cab81edcff0, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 53b97af0607dcee438b308c3a91571ef, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: d36c91e7f0829374eb15c2555792c7f1, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: f0e18f8c25e6d294ebcbf4f878f69399, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: a05663435b79c0844b9b186b651e3748, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 9e36d8df3f2c7124ea8352a53e41e75c, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 1d6d42df12bb4494a966011388f283a0, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: b61674814f1758a4a880aa7bcb1d0e44, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 57afd0f57cd013843b9a09823d55bbc2, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 21ec4dea847ff1047b49e6c102e1808e, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 1bb4a556e9800bd4cbb017601e60a65a, type: 3}
+  - midiNote: 97
+    velocityLayers: []
+  - midiNote: 98
+    velocityLayers: []
+  - midiNote: 99
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 5cfb1257945c2614a81d063ab6d8145d, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 316ffd6190f50e0438b0f70efb5fecab, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 244ac2062447e82408c568bab0575266, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 45e5a132c11a45d47b8d52cea8078f38, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 011b2a3bd515e56449cdc74721152e5b, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: a00693c8244cea94c8164ca156235765, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 35c01f7e47c1f6647822d05758e4a953, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: e4382cb2b3551ba4ca38c12d490bd4af, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: af623ccb35365384181a6caa1741d246, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 464a2aae7e3218e469f3d3036999228f, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 1c5297eb425b37b4d9931004f3a2cb50, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: b5b6a1ffe02a13c40aad535016f8cffe, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 503e2769f3fe2e44d90069805046d8a8, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 705812e1a398fb6498efcc19fd28a688, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 4771c1867321d9649bde18a569e6e2cd, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 212c781c9e785614d9fe65ca77c49ea3, type: 3}
+  - midiNote: 100
+    velocityLayers: []
+  - midiNote: 101
+    velocityLayers: []
+  - midiNote: 102
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 433f140effdeb954986bb81ff7a71eab, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 97960049b2c357440b50fb766ed2cee4, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 2e2429fe37400ac498a500d930e130a9, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 84d660d0384a16a4fa57e32c3eb472fe, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 68da39351260e05488d983621599e8ad, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: cd673d852c6e9aa43ab17c47a1c8a41a, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: d08c771f97d7ca242a2c970e19b45b1c, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 9c1259f7bb7a1544099a7044f0ab2993, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: c1f541721e1a0f5439f6bc87c151f479, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: f9099b659d57a8d42b9f0cbf5113c4d3, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 79945d086f5c690458c5ce31def6657d, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: de14462cf36e5194f8714fafc4cade0f, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 890fee5414e843b4db8440da2d91d567, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 6f7fcf48bd0b1644aab76b16d52512e4, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: e4fba3d1e3e3ff145b93b730fc39bcf2, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: baefb4259a9258048902d9ddf44abd5b, type: 3}
+  - midiNote: 103
+    velocityLayers: []
+  - midiNote: 104
+    velocityLayers: []
+  - midiNote: 105
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: 8117053073bac004b839ab40deb1c955, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: b0ccd6e2ccf52b346abcf18ec3387652, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 478eb94f53e2fe947a29e02fc9afadb0, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 75bfd4367cfddb847947f27e2281b56e, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 0be462d050e98914ba54715846b5f511, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: 1b4ba22cfe2de004cb73b4f68101fb6a, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: 6b7a3d6e7aef71b46897f781241e0b6a, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 9279d3005d391194186f5ac9d99bed94, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: d7da107c8d6842b4e9551249568149a3, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 28ce5227bb62edf4298cc5e2dc12f560, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 002ec3a30faf80e4ebd315a96d22b241, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 4ea5c9c379b4ea24eb65ecd51dbb182c, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: 43e40f415f1089845a61529786bae114, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: 87b668885e5023e4c9d7d02ff9c3f8ba, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 4444725fffa66df419e3e4ca04c8577f, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: d3c4b60a5783d234bae748435b31514b, type: 3}
+  - midiNote: 106
+    velocityLayers: []
+  - midiNote: 107
+    velocityLayers: []
+  - midiNote: 108
+    velocityLayers:
+    - minVelocity: 1
+      maxVelocity: 7
+      clip: {fileID: 8300000, guid: a202c6ad866c0754ea628eda34c5d991, type: 3}
+    - minVelocity: 8
+      maxVelocity: 15
+      clip: {fileID: 8300000, guid: 64773b9453239f04ca9afc862a6e6e06, type: 3}
+    - minVelocity: 16
+      maxVelocity: 23
+      clip: {fileID: 8300000, guid: 333a831fed8d89b4986836bbc52f8f76, type: 3}
+    - minVelocity: 24
+      maxVelocity: 31
+      clip: {fileID: 8300000, guid: 29ac95a2e90337645b8e6b1d28939605, type: 3}
+    - minVelocity: 32
+      maxVelocity: 39
+      clip: {fileID: 8300000, guid: 5a80886eb5f2e4446b0679b28f366419, type: 3}
+    - minVelocity: 40
+      maxVelocity: 47
+      clip: {fileID: 8300000, guid: ac8fd26109c4b7b4c80810967c2fa96a, type: 3}
+    - minVelocity: 48
+      maxVelocity: 55
+      clip: {fileID: 8300000, guid: c5be36af1dc7b8e439643f9626e3aa63, type: 3}
+    - minVelocity: 56
+      maxVelocity: 63
+      clip: {fileID: 8300000, guid: 1803e414a5a9bec4abaa97e0e6849de0, type: 3}
+    - minVelocity: 64
+      maxVelocity: 71
+      clip: {fileID: 8300000, guid: a70d6dd0107890f48a38d82f270c5d95, type: 3}
+    - minVelocity: 72
+      maxVelocity: 79
+      clip: {fileID: 8300000, guid: 7a69034ebfa155d45a2630e194f12020, type: 3}
+    - minVelocity: 80
+      maxVelocity: 87
+      clip: {fileID: 8300000, guid: 8fac2480e25fa3f40a3b9b0a7ecc876c, type: 3}
+    - minVelocity: 88
+      maxVelocity: 95
+      clip: {fileID: 8300000, guid: 0ee4b7036e2c0a847b39541a231fb318, type: 3}
+    - minVelocity: 96
+      maxVelocity: 103
+      clip: {fileID: 8300000, guid: f87a4fd853798ee4c8fdb7ae6d02fa74, type: 3}
+    - minVelocity: 104
+      maxVelocity: 111
+      clip: {fileID: 8300000, guid: db6d8bec8eeb93148a65d132245517e2, type: 3}
+    - minVelocity: 112
+      maxVelocity: 119
+      clip: {fileID: 8300000, guid: 1952a334b80a9294cbda71f19e6ce9e9, type: 3}
+    - minVelocity: 120
+      maxVelocity: 127
+      clip: {fileID: 8300000, guid: 3a9792ed0fd73c243a9c14d2a9c18881, type: 3}
