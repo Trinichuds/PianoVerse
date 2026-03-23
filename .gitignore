@@ -16,6 +16,7 @@
 # Visual Studio / Rider / VS Code
 /.vs/
 /.vscode/
+/.claude/
 /.idea/
 /*.csproj
 /*.unityproj
