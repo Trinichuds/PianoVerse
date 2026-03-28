@@ -24,8 +24,9 @@ Assets/
     NativePianoSampler.cs         Native backend bridge
     MidiPianoSampler.cs           Unity AudioSource fallback
     PianoCalibrationInput.cs      VR calibration input for the keyboard overlay
+    CalibrationSFX.cs             Procedural blip/chime feedback for calibration
     PianoKeyboardMapper.cs        Builds LED-style key strips from calibration points
-    PianoKeyLights.cs             Lights strip segments from MIDI note events
+    PianoKeyLights.cs             Lights strips and emits sparkle particles from MIDI notes
     PianoSampleBank.cs            ScriptableObject sample bank
     PianoVoice.cs                 Voice state and fade logic
     AudioLatencyDiagnostics.cs    Reports DSP buffer and theoretical latency
@@ -61,19 +62,33 @@ The project uses [Salamander Grand Piano](https://sfzinstruments.github.io/piano
 
 ### Piano keyboard mapping
 
-The in-headset keyboard overlay uses a two-point calibration flow:
+The in-headset keyboard overlay uses a lightweight two-anchor calibration flow with a preview marker:
 
-1. Press `A` with the controller positioned at the left edge of `A0`.
-2. Press `B` with the controller positioned at the right edge of `C8`.
-3. `PianoCalibrationInput` passes those two world-space controller positions into `PianoKeyboardMapper`.
-4. The mapper treats that span as the full piano width, divides it into `52` white-key widths, and derives all `88` key centers from standard piano spacing.
-5. The visual overlay is intentionally lightweight: it creates thin LED-style strips only, not a full virtual piano.
+1. Press `A` once to enter marker mode. A translucent preview ball appears in front of the right controller.
+2. Move the controller to the left edge of `A0` and press `A` again to place the left anchor.
+3. Move the controller to the right edge of `C8` and press `B` to place the right anchor and calibrate.
+4. `PianoCalibrationInput` forwards those two world-space points into `PianoKeyboardMapper`.
+5. The mapper treats that span as the full keyboard width, divides it into `52` equal white-key widths, and derives all `88` key centers from standard piano spacing.
+6. Press `A` again later to re-enter marker mode and recalibrate.
 
-Default strip colors:
+Calibration feedback:
 
-- Grey when idle
-- Green for active white keys
-- Orange for active black keys
+- A short blip plays when marker mode starts and when the left anchor is placed
+- A chime plays when calibration completes
+- Green/red marker spheres briefly confirm the final anchor positions
+
+Overlay visuals:
+
+- White keys render as slim LED bars
+- Black keys render as inverted `T` caps so their tops align with the white-key bar
+- A faint top guide line spans from `A0` to `C8`
+- Per-key glow meshes turn on while notes are active
+- `PianoKeyLights` adds sparkle particles on note-on plus a soft stream while keys are held
+
+Default active colors:
+
+- Soft green for white keys
+- Warm orange for black keys
 
 ### Building the native DLL
 

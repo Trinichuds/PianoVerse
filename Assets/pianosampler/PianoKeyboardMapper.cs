@@ -11,31 +11,56 @@ public class PianoKeyboardMapper : MonoBehaviour
 
     [Header("Keyboard Depth Reference")]
     public float whiteKeyDepth = 0.15f;
-    public float blackKeyDepth = 0.09f;
     [Range(0.4f, 0.8f)]
     public float blackKeyWidthRatio = 0.58f;
     public bool flipDepth = false;
 
     [Header("LED Strips")]
-    public float stripeThickness = 0.01f;
-    public float stripeHeight = 0.01f;
+    public float stripeThickness = 0.004f;
+    public float stripeHeight = 0.005f;
     public float stripeYOffset = 0.003f;
-    public float blackStripeExtraYOffset = 0.006f;
+    public float blackCapHeight = 0.007f;
+    [Range(0.15f, 0.5f)]
+    public float blackStemWidthRatio = 0.3f;
     public float keyGap = 0.001f;
 
+    [Header("Glow")]
+    [Range(0f, 0.01f)]
+    public float glowPadding = 0.003f;
+
+    [Header("Top Line")]
+    public float topLineThickness = 0.001f;
+    public Color topLineColor = new(0.7f, 0.7f, 0.8f, 0.4f);
+
     public bool IsCalibrated { get; private set; }
+
+    /// <summary>World-space left end of the top line (above A0).</summary>
+    public Vector3 TopLineLeft { get; private set; }
+    /// <summary>World-space right end of the top line (above C8).</summary>
+    public Vector3 TopLineRight { get; private set; }
+    /// <summary>Forward direction (away from player, into the keyboard).</summary>
+    public Vector3 TopLineForward { get; private set; }
+    /// <summary>Y position of the top line.</summary>
+    public float TopLineY { get; private set; }
 
     private readonly Vector3[] _keyPositions = new Vector3[88];
     private readonly bool[] _isBlack = new bool[88];
     private readonly MeshRenderer[] _strips = new MeshRenderer[88];
+    private readonly MeshRenderer[] _glowStrips = new MeshRenderer[88];
+    private GameObject _topLineObj;
     private readonly Color[] _defaultStripColors = new Color[88];
+    private readonly float[] _keyHalfWidths = new float[88];
     private MaterialPropertyBlock _propBlock;
-    private Material _stripMaterial;
+    private MaterialPropertyBlock _glowPropBlock;
+    private Material _whiteStripMaterial;
+    private Material _blackStripMaterial;
+    private Material _glowMaterial;
 
     private static readonly bool[] BlackInOctave =
         { false, true, false, true, false, false, true, false, true, false, true, false };
 
-    private static readonly Color IdleStrip = new(0.22f, 0.22f, 0.22f, 1f);
+    private static readonly Color IdleWhite = new(0.55f, 0.58f, 0.7f, 0.18f);
+    private static readonly Color IdleBlack = new(0.35f, 0.38f, 0.5f, 0.13f);
 
     private void Start()
     {
@@ -67,6 +92,12 @@ public class PianoKeyboardMapper : MonoBehaviour
 
     public bool KeyIsBlack(int keyIndex) => keyIndex is >= 0 and < 88 && _isBlack[keyIndex];
 
+    public float GetKeyHalfWidth(int keyIndex)
+    {
+        if (!IsCalibrated || keyIndex is < 0 or >= 88) return 0.005f;
+        return _keyHalfWidths[keyIndex];
+    }
+
     public void SetKeyIndicatorColor(int keyIndex, Color color)
     {
         if (keyIndex is < 0 or >= 88 || _strips[keyIndex] == null)
@@ -75,6 +106,16 @@ public class PianoKeyboardMapper : MonoBehaviour
         _propBlock ??= new MaterialPropertyBlock();
         _propBlock.SetColor("_Color", color);
         _strips[keyIndex].SetPropertyBlock(_propBlock);
+
+        if (_glowStrips[keyIndex] != null)
+        {
+            _glowPropBlock ??= new MaterialPropertyBlock();
+            Color glow = color;
+            glow.a = 0.2f;
+            _glowPropBlock.SetColor("_Color", glow);
+            _glowStrips[keyIndex].SetPropertyBlock(_glowPropBlock);
+            _glowStrips[keyIndex].enabled = true;
+        }
     }
 
     public void ResetKeyIndicator(int keyIndex)
@@ -82,7 +123,13 @@ public class PianoKeyboardMapper : MonoBehaviour
         if (keyIndex is < 0 or >= 88)
             return;
 
-        SetKeyIndicatorColor(keyIndex, _defaultStripColors[keyIndex]);
+        _propBlock ??= new MaterialPropertyBlock();
+        _propBlock.SetColor("_Color", _defaultStripColors[keyIndex]);
+        if (_strips[keyIndex] != null)
+            _strips[keyIndex].SetPropertyBlock(_propBlock);
+
+        if (_glowStrips[keyIndex] != null)
+            _glowStrips[keyIndex].enabled = false;
     }
 
     private bool TryBuildStrips(Vector3 leftEdge, Vector3 rightEdge, float alpha, out float totalWidth)
@@ -102,11 +149,12 @@ public class PianoKeyboardMapper : MonoBehaviour
 
         float whiteKeyWidth = totalWidth / 52f;
         float blackKeyWidth = whiteKeyWidth * blackKeyWidthRatio;
-        float whiteStripeStart = Mathf.Max(0f, whiteKeyDepth - stripeThickness);
-        float blackStripeStart = Mathf.Max(0f, blackKeyDepth - stripeThickness);
+        float stemHalfWidth = blackKeyWidth * 0.5f * blackStemWidthRatio;
+        float stripeStart = Mathf.Max(0f, whiteKeyDepth - stripeThickness);
 
         HideMainMesh();
         ClearExistingStrips();
+        EnsureMaterials();
 
         for (int i = 0; i < 88; i++)
         {
@@ -116,42 +164,266 @@ public class PianoKeyboardMapper : MonoBehaviour
 
             float center = NormalizedCenter(midiNote) * totalWidth;
             float halfWidth = (black ? blackKeyWidth : whiteKeyWidth) * 0.5f - keyGap * 0.5f;
-            float stripeStart = black ? blackStripeStart : whiteStripeStart;
-            float yOffset = stripeYOffset + (black ? blackStripeExtraYOffset : 0f);
+
+            float totalHeight = black ? stripeHeight + blackCapHeight : stripeHeight;
+            // Common top baseline: white tops at stripeYOffset + stripeHeight
+            // Black hangs down from there, so its base is lower
+            float topLine = stripeYOffset + stripeHeight;
+            float yBase = black ? topLine - totalHeight : stripeYOffset;
 
             _keyPositions[i] = leftEdge
                 + kRight * center
                 + kForward * (stripeStart + stripeThickness * 0.5f)
-                + kUp * (yOffset + stripeHeight * 0.5f);
+                + kUp * (yBase + totalHeight * 0.5f);
+            _keyHalfWidths[i] = halfWidth;
 
-            CreateStrip(i, leftEdge, kRight, kForward, kUp, center, halfWidth, stripeStart, yOffset, alpha);
+            // Black strips sit slightly closer to viewer so stem always renders on top
+            float zNudge = black ? -0.0015f : 0f;
+
+            if (black)
+                CreateBlackStrip(i, leftEdge, kRight, kForward, kUp, center, halfWidth,
+                    stemHalfWidth, stripeStart + zNudge, alpha);
+            else
+                CreateWhiteStrip(i, leftEdge, kRight, kForward, kUp, center, halfWidth,
+                    stripeStart, alpha);
         }
+
+        // Build top line hugging the top edge of the strip bar
+        float tl = stripeYOffset + stripeHeight;
+        TopLineLeft = leftEdge + kUp * tl + kForward * stripeStart;
+        TopLineRight = rightEdge + kUp * tl + kForward * stripeStart;
+        TopLineForward = kForward;
+        TopLineY = tl;
+        BuildTopLine(leftEdge, rightEdge, kRight, kForward, kUp, tl, stripeStart);
 
         return true;
     }
 
-    private void CreateStrip(int keyIndex, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
-        float center, float halfWidth, float stripeStart, float yOffset, float alpha)
+    private void BuildTopLine(Vector3 leftEdge, Vector3 rightEdge, Vector3 kRight, Vector3 kForward, Vector3 kUp,
+        float y, float stripeStart)
+    {
+        if (_topLineObj != null)
+            Destroy(_topLineObj);
+
+        _topLineObj = new GameObject("TopLine");
+        _topLineObj.transform.SetParent(transform, false);
+
+        var lr = _topLineObj.AddComponent<LineRenderer>();
+        lr.useWorldSpace = true;
+        lr.positionCount = 2;
+
+        Vector3 left = leftEdge + kUp * y + kForward * (stripeStart + stripeThickness * 0.5f);
+        Vector3 right = rightEdge + kUp * y + kForward * (stripeStart + stripeThickness * 0.5f);
+        lr.SetPosition(0, left);
+        lr.SetPosition(1, right);
+
+        lr.startWidth = topLineThickness;
+        lr.endWidth = topLineThickness;
+
+        var mat = new Material(Shader.Find("Sprites/Default"));
+        mat.mainTexture = Texture2D.whiteTexture;
+        mat.renderQueue = 3001;
+        lr.material = mat;
+        lr.startColor = topLineColor;
+        lr.endColor = topLineColor;
+        lr.allowOcclusionWhenDynamic = false;
+    }
+
+    private void EnsureMaterials()
+    {
+        if (_whiteStripMaterial == null)
+        {
+            _whiteStripMaterial = new Material(Shader.Find("Sprites/Default"));
+            _whiteStripMaterial.mainTexture = Texture2D.whiteTexture;
+            _whiteStripMaterial.renderQueue = 3000;
+        }
+
+        if (_blackStripMaterial == null)
+        {
+            _blackStripMaterial = new Material(Shader.Find("Sprites/Default"));
+            _blackStripMaterial.mainTexture = Texture2D.whiteTexture;
+            _blackStripMaterial.renderQueue = 3002;
+        }
+
+        if (_glowMaterial == null)
+        {
+            _glowMaterial = new Material(Shader.Find("Sprites/Default"));
+            _glowMaterial.mainTexture = Texture2D.whiteTexture;
+            _glowMaterial.renderQueue = 2999;
+        }
+    }
+
+    private void CreateWhiteStrip(int keyIndex, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
+        float center, float halfWidth, float stripeStart, float alpha)
     {
         _propBlock ??= new MaterialPropertyBlock();
-        _stripMaterial ??= new Material(Shader.Find("Unlit/Color"));
+        _glowPropBlock ??= new MaterialPropertyBlock();
 
         var go = new GameObject($"KeyStrip_{keyIndex}");
         go.transform.SetParent(transform, false);
 
-        var meshFilter = go.AddComponent<MeshFilter>();
-        var meshRenderer = go.AddComponent<MeshRenderer>();
+        var mf = go.AddComponent<MeshFilter>();
+        var mr = go.AddComponent<MeshRenderer>();
 
+        float topLine = stripeYOffset + stripeHeight;
+        mf.sharedMesh = BuildBoxMesh($"KeyStripMesh_{keyIndex}",
+            origin, kRight, kForward, kUp, center, halfWidth, stripeStart,
+            topLine - stripeHeight, stripeThickness, stripeHeight);
+        mr.sharedMaterial = _whiteStripMaterial;
+        mr.allowOcclusionWhenDynamic = false;
+
+        Color idle = IdleWhite;
+        idle.a *= alpha;
+        _defaultStripColors[keyIndex] = idle;
+        _propBlock.SetColor("_Color", idle);
+        mr.SetPropertyBlock(_propBlock);
+        _strips[keyIndex] = mr;
+
+        CreateGlow(keyIndex, origin, kRight, kForward, kUp, center, halfWidth,
+            stripeStart, stripeYOffset, stripeHeight);
+    }
+
+    private void CreateBlackStrip(int keyIndex, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
+        float center, float capHalfWidth, float stemHalfWidth, float stripeStart, float alpha)
+    {
+        _propBlock ??= new MaterialPropertyBlock();
+        _glowPropBlock ??= new MaterialPropertyBlock();
+
+        var go = new GameObject($"KeyStrip_{keyIndex}");
+        go.transform.SetParent(transform, false);
+
+        var mf = go.AddComponent<MeshFilter>();
+        var mr = go.AddComponent<MeshRenderer>();
+
+        // Inverted T: narrow stem at top (shares top line with white), wide cap hangs below
+        float topLine = stripeYOffset + stripeHeight;
+        float capBottom = topLine - stripeHeight - blackCapHeight;
+        mf.sharedMesh = BuildInvertedTMesh($"KeyStripMesh_{keyIndex}",
+            origin, kRight, kForward, kUp, center,
+            stemHalfWidth, capHalfWidth,
+            stripeStart, topLine,
+            stripeThickness, stripeHeight, blackCapHeight);
+        mr.sharedMaterial = _blackStripMaterial;
+        mr.allowOcclusionWhenDynamic = false;
+
+        Color idle = IdleBlack;
+        idle.a *= alpha;
+        _defaultStripColors[keyIndex] = idle;
+        _propBlock.SetColor("_Color", idle);
+        mr.SetPropertyBlock(_propBlock);
+        _strips[keyIndex] = mr;
+
+        float totalHeight = stripeHeight + blackCapHeight;
+        CreateGlow(keyIndex, origin, kRight, kForward, kUp, center, capHalfWidth,
+            stripeStart, capBottom, totalHeight);
+    }
+
+    private void CreateGlow(int keyIndex, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
+        float center, float halfWidth, float stripeStart, float yOffset, float height)
+    {
+        var glowGo = new GameObject($"KeyGlow_{keyIndex}");
+        glowGo.transform.SetParent(transform, false);
+
+        var glowMf = glowGo.AddComponent<MeshFilter>();
+        var glowMr = glowGo.AddComponent<MeshRenderer>();
+
+        float pad = glowPadding;
+        glowMf.sharedMesh = BuildBoxMesh($"KeyGlowMesh_{keyIndex}",
+            origin, kRight, kForward, kUp, center, halfWidth + pad, stripeStart - pad,
+            yOffset - pad, stripeThickness + pad * 2f, height + pad * 2f);
+        glowMr.sharedMaterial = _glowMaterial;
+        glowMr.allowOcclusionWhenDynamic = false;
+        glowMr.enabled = false;
+
+        _glowStrips[keyIndex] = glowMr;
+    }
+
+    /// <summary>
+    /// Inverted T-shape: narrow stem at top sharing the white key top line,
+    /// wide cap hanging below.
+    /// Stem: from (topLine - stemHeight) to topLine, width = stemHW*2
+    /// Cap:  from (topLine - stemHeight - capHeight) to (topLine - stemHeight), width = capHW*2
+    /// </summary>
+    private Mesh BuildInvertedTMesh(string name, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
+        float center, float stemHW, float capHW,
+        float stripeStart, float topLine,
+        float thickness, float stemHeight, float capHeight)
+    {
+        float stemTop = topLine;
+        float stemBot = topLine - stemHeight;
+        float capBot = stemBot - capHeight;
+
+        // Stem front
+        Vector3 sFbl = origin + kRight * (center - stemHW) + kForward * stripeStart + kUp * stemBot;
+        Vector3 sFbr = origin + kRight * (center + stemHW) + kForward * stripeStart + kUp * stemBot;
+        Vector3 sFtl = origin + kRight * (center - stemHW) + kForward * stripeStart + kUp * stemTop;
+        Vector3 sFtr = origin + kRight * (center + stemHW) + kForward * stripeStart + kUp * stemTop;
+        // Stem back
+        Vector3 sBbl = sFbl + kForward * thickness;
+        Vector3 sBbr = sFbr + kForward * thickness;
+        Vector3 sBtl = sFtl + kForward * thickness;
+        Vector3 sBtr = sFtr + kForward * thickness;
+
+        // Cap front
+        Vector3 cFbl = origin + kRight * (center - capHW) + kForward * stripeStart + kUp * capBot;
+        Vector3 cFbr = origin + kRight * (center + capHW) + kForward * stripeStart + kUp * capBot;
+        Vector3 cFtl = origin + kRight * (center - capHW) + kForward * stripeStart + kUp * stemBot;
+        Vector3 cFtr = origin + kRight * (center + capHW) + kForward * stripeStart + kUp * stemBot;
+        // Cap back
+        Vector3 cBbl = cFbl + kForward * thickness;
+        Vector3 cBbr = cFbr + kForward * thickness;
+        Vector3 cBtl = cFtl + kForward * thickness;
+        Vector3 cBtr = cFtr + kForward * thickness;
+
+        var mesh = new Mesh { name = name };
+        mesh.vertices = new[]
+        {
+            // Stem: front bl(0), br(1), tr(2), tl(3) | back bl(4), br(5), tr(6), tl(7)
+            transform.InverseTransformPoint(sFbl), transform.InverseTransformPoint(sFbr),
+            transform.InverseTransformPoint(sFtr), transform.InverseTransformPoint(sFtl),
+            transform.InverseTransformPoint(sBbl), transform.InverseTransformPoint(sBbr),
+            transform.InverseTransformPoint(sBtr), transform.InverseTransformPoint(sBtl),
+            // Cap: front bl(8), br(9), tr(10), tl(11) | back bl(12), br(13), tr(14), tl(15)
+            transform.InverseTransformPoint(cFbl), transform.InverseTransformPoint(cFbr),
+            transform.InverseTransformPoint(cFtr), transform.InverseTransformPoint(cFtl),
+            transform.InverseTransformPoint(cBbl), transform.InverseTransformPoint(cBbr),
+            transform.InverseTransformPoint(cBtr), transform.InverseTransformPoint(cBtl),
+        };
+        mesh.triangles = new[]
+        {
+            // Stem 6 faces
+            0,2,1, 0,3,2,
+            4,5,6, 4,6,7,
+            0,1,5, 0,5,4,
+            3,7,6, 3,6,2,
+            1,2,6, 1,6,5,
+            0,4,7, 0,7,3,
+            // Cap 6 faces
+            8,10,9, 8,11,10,
+            12,13,14, 12,14,15,
+            8,9,13, 8,13,12,
+            11,15,14, 11,14,10,
+            9,10,14, 9,14,13,
+            8,12,15, 8,15,11,
+        };
+        mesh.RecalculateNormals();
+        mesh.bounds = new Bounds(Vector3.zero, Vector3.one * 1000f);
+        return mesh;
+    }
+
+    private Mesh BuildBoxMesh(string name, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
+        float center, float halfWidth, float stripeStart, float yOffset, float thickness, float height)
+    {
         Vector3 bl = origin + kRight * (center - halfWidth) + kForward * stripeStart + kUp * yOffset;
         Vector3 br = origin + kRight * (center + halfWidth) + kForward * stripeStart + kUp * yOffset;
-        Vector3 bl2 = bl + kForward * stripeThickness;
-        Vector3 br2 = br + kForward * stripeThickness;
-        Vector3 tl = bl + kUp * stripeHeight;
-        Vector3 tr = br + kUp * stripeHeight;
-        Vector3 tl2 = bl2 + kUp * stripeHeight;
-        Vector3 tr2 = br2 + kUp * stripeHeight;
+        Vector3 bl2 = bl + kForward * thickness;
+        Vector3 br2 = br + kForward * thickness;
+        Vector3 tl = bl + kUp * height;
+        Vector3 tr = br + kUp * height;
+        Vector3 tl2 = bl2 + kUp * height;
+        Vector3 tr2 = br2 + kUp * height;
 
-        var mesh = new Mesh { name = $"KeyStripMesh_{keyIndex}" };
+        var mesh = new Mesh { name = name };
         mesh.vertices = new[]
         {
             transform.InverseTransformPoint(bl),
@@ -174,18 +446,7 @@ public class PianoKeyboardMapper : MonoBehaviour
         };
         mesh.RecalculateNormals();
         mesh.bounds = new Bounds(Vector3.zero, Vector3.one * 1000f);
-
-        meshFilter.sharedMesh = mesh;
-        meshRenderer.sharedMaterial = _stripMaterial;
-        meshRenderer.allowOcclusionWhenDynamic = false;
-
-        Color idle = IdleStrip;
-        idle.a = alpha;
-        _defaultStripColors[keyIndex] = idle;
-        _propBlock.SetColor("_Color", idle);
-        meshRenderer.SetPropertyBlock(_propBlock);
-
-        _strips[keyIndex] = meshRenderer;
+        return mesh;
     }
 
     private void HideMainMesh()
@@ -200,18 +461,19 @@ public class PianoKeyboardMapper : MonoBehaviour
     {
         for (int i = 0; i < _strips.Length; i++)
         {
-            if (_strips[i] != null)
-                Destroy(_strips[i].gameObject);
+            if (_strips[i] != null) Destroy(_strips[i].gameObject);
+            if (_glowStrips[i] != null) Destroy(_glowStrips[i].gameObject);
             _strips[i] = null;
+            _glowStrips[i] = null;
         }
+        if (_topLineObj != null) { Destroy(_topLineObj); _topLineObj = null; }
     }
 
     private int CountVisibleStrips()
     {
         int count = 0;
         for (int i = 0; i < _strips.Length; i++)
-            if (_strips[i] != null)
-                count++;
+            if (_strips[i] != null) count++;
         return count;
     }
 
