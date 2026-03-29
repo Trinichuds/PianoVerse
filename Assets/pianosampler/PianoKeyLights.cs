@@ -25,6 +25,7 @@ public class PianoKeyLights : MonoBehaviour
     private static readonly Color MissColor    = new(1f, 0.15f, 0.1f, 0.9f);
     private static readonly Color WrongColor   = new(1f, 0f, 0f, 0.7f);
     private static readonly Color CorrectColor = new(0.2f, 1f, 0.5f, 0.9f);
+    private static readonly Color SustainColor = new(0.6f, 0.3f, 1f, 0.75f);
 
     private ParticleSystem _sparklePS;
     private readonly HashSet<int> _activeKeys = new();
@@ -41,8 +42,10 @@ public class PianoKeyLights : MonoBehaviour
     {
         if (midiInput != null)
         {
-            midiInput.NotePressed    += OnNotePressed;
-            midiInput.NoteFullyEnded += OnNoteEnded;
+            midiInput.NotePressed        += OnNotePressed;
+            midiInput.NoteReleased       += OnNoteReleased;
+            midiInput.NoteBecameSustained += OnNoteSustained;
+            midiInput.NoteFullyEnded     += OnNoteEnded;
         }
 
         if (noteMapPlayer != null)
@@ -59,8 +62,10 @@ public class PianoKeyLights : MonoBehaviour
     {
         if (midiInput != null)
         {
-            midiInput.NotePressed    -= OnNotePressed;
-            midiInput.NoteFullyEnded -= OnNoteEnded;
+            midiInput.NotePressed        -= OnNotePressed;
+            midiInput.NoteReleased       -= OnNoteReleased;
+            midiInput.NoteBecameSustained -= OnNoteSustained;
+            midiInput.NoteFullyEnded     -= OnNoteEnded;
         }
 
         if (noteMapPlayer != null)
@@ -138,6 +143,22 @@ public class PianoKeyLights : MonoBehaviour
 
         if (_sparklePS != null)
             EmitSparkles(mapper.GetKeyPosition(keyIndex), boosted, burstCount, mapper.GetKeyHalfWidth(keyIndex));
+    }
+
+    private void OnNoteReleased(int keyIndex, int midiNote)
+    {
+        // Physical key released — if sustain is holding it, transition to purple
+        if (!mapper.IsCalibrated) return;
+        if (midiInput != null && midiInput.IsKeySustainedOnly(keyIndex))
+            return; // OnNoteSustained will handle the color change
+    }
+
+    private void OnNoteSustained(int keyIndex, int midiNote)
+    {
+        if (!mapper.IsCalibrated) return;
+
+        mapper.SetKeyIndicatorColor(keyIndex, SustainColor);
+        _activeColors[keyIndex] = SustainColor;
     }
 
     private void OnNoteEnded(int keyIndex, int midiNote)

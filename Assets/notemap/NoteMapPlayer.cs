@@ -37,7 +37,7 @@ public class NoteMapPlayer : MonoBehaviour
 
     [Header("Step Grouping — Practice")]
     [Tooltip("Notes within this many seconds of each other form one step.")]
-    public float stepTolerance = 0.030f;
+    public float stepTolerance = 0.080f;
 
     // -------------------------------------------------------------------------
     // Public state
@@ -196,16 +196,16 @@ public class NoteMapPlayer : MonoBehaviour
     private void OnEnable()
     {
         if (midiInput == null) return;
-        midiInput.NotePressed    += OnPlayerPressed;
-        midiInput.NoteFullyEnded += OnPlayerReleased;
+        midiInput.NotePressed  += OnPlayerPressed;
+        midiInput.NoteReleased += OnPlayerReleased;
         Debug.Log("[NoteMapPlayer] Subscribed to MIDI input.");
     }
 
     private void OnDisable()
     {
         if (midiInput == null) return;
-        midiInput.NotePressed    -= OnPlayerPressed;
-        midiInput.NoteFullyEnded -= OnPlayerReleased;
+        midiInput.NotePressed  -= OnPlayerPressed;
+        midiInput.NoteReleased -= OnPlayerReleased;
     }
 
     private void Update()

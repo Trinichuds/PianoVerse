@@ -20,6 +20,13 @@ Unity's built-in `AudioSource` path in `MidiPianoSampler.cs` still exists as a f
 Assets/
   inputs/
     Midi88KeyInput.cs             MIDI input handler for notes and sustain pedal
+  notemap/
+    MidiParser.cs                 Converts MIDI files into runtime note maps
+    NoteMap.cs                    Serializable note/song data model
+    NoteMapLoader.cs              Loads and auto-converts maps from StreamingAssets/Maps
+    NoteMapPlayer.cs              Real-time + practice-mode song playback/scoring
+    SongSelector.cs               Left-controller song browser and transport controls
+    WaterfallRenderer.cs          Falling-note guide bars aligned to the keyboard overlay
   pianosampler/
     NativePianoSampler.cs         Native backend bridge
     MidiPianoSampler.cs           Unity AudioSource fallback
@@ -30,6 +37,8 @@ Assets/
     PianoSampleBank.cs            ScriptableObject sample bank
     PianoVoice.cs                 Voice state and fade logic
     AudioLatencyDiagnostics.cs    Reports DSP buffer and theoretical latency
+  StreamingAssets/
+    Maps/                         Runtime-loaded .mid + cached .json song maps
   Plugins/x86_64/
     NativePianoBackend.dll        Compiled native audio engine
 
@@ -81,14 +90,41 @@ Overlay visuals:
 
 - White keys render as slim LED bars
 - Black keys render as inverted `T` caps so their tops align with the white-key bar
-- A faint top guide line spans from `A0` to `C8`
+- A bright top guide line plus a soft glow line span from `A0` to `C8`
 - Per-key glow meshes turn on while notes are active
 - `PianoKeyLights` adds sparkle particles on note-on plus a soft stream while keys are held
+- Sustained notes shift to purple until they fully end
 
 Default active colors:
 
 - Soft green for white keys
 - Warm orange for black keys
+
+### Song maps and practice mode
+
+The project can load songs from `Assets/StreamingAssets/Maps/` at runtime:
+
+- `.mid` or `.midi` files are scanned on startup
+- If a matching `.json` note map does not exist yet, `NoteMapLoader` parses the MIDI and writes a cached JSON file
+- All loaded maps are sorted by title and exposed to the in-headset song selector
+- Bundled sample songs currently include `pianotest`, `Fur Elise`, and `Nocturne in E-Flat, Op. 9 No. 2`
+
+`NoteMapPlayer` supports two modes:
+
+- `RealTime`: notes scroll continuously and timing is scored as Perfect/Great/Good/Miss
+- `Practice`: playback pauses at grouped note steps until the required keys are held, using a wider `0.08s` grouping tolerance for chords and near-simultaneous notes
+
+`WaterfallRenderer` uses the calibrated keyboard top line to draw falling bars so note timing lands exactly on the overlay.
+
+### VR song controls
+
+`SongSelector` uses the left controller:
+
+- Left thumbstick left/right: browse songs
+- Left trigger: play or stop the selected song
+- Left grip: toggle `Practice` / `RealTime`
+- `Y`: pause or resume
+- `X`: restart the current song
 
 ### Building the native DLL
 

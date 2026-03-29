@@ -29,8 +29,10 @@ public class PianoKeyboardMapper : MonoBehaviour
     public float glowPadding = 0.003f;
 
     [Header("Top Line")]
-    public float topLineThickness = 0.001f;
-    public Color topLineColor = new(0.7f, 0.7f, 0.8f, 0.4f);
+    public float topLineThickness = 0.003f;
+    public Color topLineColor = new(0.85f, 0.88f, 1f, 0.7f);
+    public float glowLineThickness = 0.008f;
+    public Color glowLineColor = new(0.4f, 0.5f, 1f, 0.25f);
 
     public bool IsCalibrated { get; private set; }
 
@@ -48,6 +50,7 @@ public class PianoKeyboardMapper : MonoBehaviour
     private readonly MeshRenderer[] _strips = new MeshRenderer[88];
     private readonly MeshRenderer[] _glowStrips = new MeshRenderer[88];
     private GameObject _topLineObj;
+    private GameObject _glowLineObj;
     private readonly Color[] _defaultStripColors = new Color[88];
     private readonly float[] _keyHalfWidths = new float[88];
     private MaterialPropertyBlock _propBlock;
@@ -202,27 +205,43 @@ public class PianoKeyboardMapper : MonoBehaviour
     private void BuildTopLine(Vector3 leftEdge, Vector3 rightEdge, Vector3 kRight, Vector3 kForward, Vector3 kUp,
         float y, float stripeStart)
     {
-        if (_topLineObj != null)
-            Destroy(_topLineObj);
-
-        _topLineObj = new GameObject("TopLine");
-        _topLineObj.transform.SetParent(transform, false);
-
-        var lr = _topLineObj.AddComponent<LineRenderer>();
-        lr.useWorldSpace = true;
-        lr.positionCount = 2;
+        if (_topLineObj != null) Destroy(_topLineObj);
+        if (_glowLineObj != null) Destroy(_glowLineObj);
 
         Vector3 left = leftEdge + kUp * y + kForward * (stripeStart + stripeThickness * 0.5f);
         Vector3 right = rightEdge + kUp * y + kForward * (stripeStart + stripeThickness * 0.5f);
+
+        // Glow line (wider, softer, behind main line)
+        _glowLineObj = new GameObject("TopLineGlow");
+        _glowLineObj.transform.SetParent(transform, false);
+        var glowLr = _glowLineObj.AddComponent<LineRenderer>();
+        glowLr.useWorldSpace = true;
+        glowLr.positionCount = 2;
+        glowLr.SetPosition(0, left);
+        glowLr.SetPosition(1, right);
+        glowLr.startWidth = glowLineThickness;
+        glowLr.endWidth = glowLineThickness;
+        var glowMat = new Material(Shader.Find("Sprites/Default"));
+        glowMat.mainTexture = Texture2D.whiteTexture;
+        glowMat.renderQueue = 2999;
+        glowLr.material = glowMat;
+        glowLr.startColor = glowLineColor;
+        glowLr.endColor = glowLineColor;
+        glowLr.allowOcclusionWhenDynamic = false;
+
+        // Main line (sharp, bright)
+        _topLineObj = new GameObject("TopLine");
+        _topLineObj.transform.SetParent(transform, false);
+        var lr = _topLineObj.AddComponent<LineRenderer>();
+        lr.useWorldSpace = true;
+        lr.positionCount = 2;
         lr.SetPosition(0, left);
         lr.SetPosition(1, right);
-
         lr.startWidth = topLineThickness;
         lr.endWidth = topLineThickness;
-
         var mat = new Material(Shader.Find("Sprites/Default"));
         mat.mainTexture = Texture2D.whiteTexture;
-        mat.renderQueue = 3001;
+        mat.renderQueue = 3003;
         lr.material = mat;
         lr.startColor = topLineColor;
         lr.endColor = topLineColor;
@@ -467,6 +486,7 @@ public class PianoKeyboardMapper : MonoBehaviour
             _glowStrips[i] = null;
         }
         if (_topLineObj != null) { Destroy(_topLineObj); _topLineObj = null; }
+        if (_glowLineObj != null) { Destroy(_glowLineObj); _glowLineObj = null; }
     }
 
     private int CountVisibleStrips()
