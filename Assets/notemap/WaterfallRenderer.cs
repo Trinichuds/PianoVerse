@@ -1,0 +1,236 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// Renders falling note bars above the piano keyboard strip using 3D cubes.
+/// Bars fall vertically downward toward the top line, crossing it at the note's play time.
+/// </summary>
+public class WaterfallRenderer : MonoBehaviour
+{
+    [Header("References")]
+    public PianoKeyboardMapper mapper;
+    public NoteMapPlayer player;
+
+    [Header("Appearance")]
+    [Tooltip("Meters of fall distance per second of song time.")]
+    public float fallSpeed = 0.3f;
+    [Tooltip("How many seconds of upcoming notes to show.")]
+    public float lookAhead = 4f;
+    [Tooltip("How long past bars linger below the line.")]
+    public float trailTime = 0.3f;
+
+    [Header("Bar Style")]
+    public float barThickness = 0.003f;
+    public Color whiteNoteColor = new(0.25f, 0.95f, 0.45f, 0.35f);
+    public Color blackNoteColor = new(1f, 0.5f, 0.1f, 0.35f);
+    public Color whiteActiveColor = new(0.3f, 1f, 0.5f, 0.7f);
+    public Color blackActiveColor = new(1f, 0.55f, 0.15f, 0.7f);
+
+    private Material _whiteMat;
+    private Material _blackMat;
+    private Mesh _cubeMesh;
+
+    private readonly List<BarInstance> _pool = new();
+    private readonly Dictionary<int, BarInstance> _activeMap = new();
+    private readonly List<int> _removeList = new();
+    private int _nextNoteIndex;
+
+    private Vector3 _kRight;
+    private Vector3 _kUp;
+    private Vector3 _topLineOrigin;
+
+    private class BarInstance
+    {
+        public GameObject go;
+        public MeshRenderer mr;
+        public MaterialPropertyBlock pb;
+        public int noteIndex;
+        public bool inUse;
+    }
+
+    private void Start()
+    {
+        CreateMaterials();
+        // Grab the cube mesh from a temp primitive
+        var temp = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _cubeMesh = temp.GetComponent<MeshFilter>().sharedMesh;
+        Destroy(temp);
+
+        if (player != null)
+            player.SongFinished += OnSongFinished;
+    }
+
+    private void OnDestroy()
+    {
+        if (player != null)
+            player.SongFinished -= OnSongFinished;
+    }
+
+    private void OnSongFinished()
+    {
+        Invoke(nameof(ResetBars), trailTime + 0.5f);
+    }
+
+    private void LateUpdate()
+    {
+        if (mapper == null || !mapper.IsCalibrated) return;
+        if (player == null || !player.IsPlaying || player.CurrentMap == null) return;
+
+        var notes = player.CurrentMap.notes;
+        if (notes == null || notes.Length == 0) return;
+
+        float pt = player.PlaybackTime;
+
+        _topLineOrigin = mapper.TopLineLeft;
+        _kRight = (mapper.TopLineRight - mapper.TopLineLeft).normalized;
+        _kUp = Vector3.up;
+
+        // Release expired bars
+        _removeList.Clear();
+        foreach (var kvp in _activeMap)
+        {
+            var note = notes[kvp.Key];
+            float barTop = ((note.start + note.dur) - pt) * fallSpeed;
+            if (barTop < -trailTime * fallSpeed)
+            {
+                ReleaseBar(kvp.Value);
+                _removeList.Add(kvp.Key);
+            }
+        }
+        foreach (int key in _removeList)
+            _activeMap.Remove(key);
+
+        // Activate new bars entering look-ahead
+        while (_nextNoteIndex < notes.Length)
+        {
+            var note = notes[_nextNoteIndex];
+            float barBottom = (note.start - pt) * fallSpeed;
+
+            if (barBottom <= lookAhead * fallSpeed)
+            {
+                if (!_activeMap.ContainsKey(_nextNoteIndex))
+                {
+                    var bar = AcquireBar();
+                    bar.noteIndex = _nextNoteIndex;
+                    _activeMap[_nextNoteIndex] = bar;
+                }
+                _nextNoteIndex++;
+            }
+            else break;
+        }
+
+        // Update positions
+        foreach (var kvp in _activeMap)
+            UpdateBar(kvp.Value, notes[kvp.Key], pt);
+    }
+
+    private void UpdateBar(BarInstance bar, NoteEvent note, float playbackTime)
+    {
+        bool isBlack = mapper.KeyIsBlack(note.key);
+        float halfWidth = mapper.GetKeyHalfWidth(note.key);
+
+        Vector3 keyPos = mapper.GetKeyPosition(note.key);
+        float centerX = Vector3.Dot(keyPos - _topLineOrigin, _kRight);
+
+        float barBottom = (note.start - playbackTime) * fallSpeed;
+        float barHeight = Mathf.Max(note.dur * fallSpeed, 0.003f);
+
+        bool active = barBottom <= 0f && barBottom + barHeight > 0f;
+
+        // Position: center of the cube in world space
+        Vector3 center = _topLineOrigin
+            + _kRight * centerX
+            + _kUp * (barBottom + barHeight * 0.5f)
+            + mapper.TopLineForward * barThickness * 0.5f;
+
+        bar.go.transform.position = center;
+
+        // Scale: width along keyboard, height = bar duration, depth = thickness
+        // We need to orient the cube so X = keyboard direction, Y = up, Z = forward
+        bar.go.transform.rotation = Quaternion.LookRotation(mapper.TopLineForward, _kUp);
+        bar.go.transform.localScale = new Vector3(halfWidth * 2f, barHeight, barThickness);
+
+        // Color
+        Color c = active
+            ? (isBlack ? blackActiveColor : whiteActiveColor)
+            : (isBlack ? blackNoteColor : whiteNoteColor);
+
+        bar.pb.SetColor("_Color", c);
+        bar.mr.SetPropertyBlock(bar.pb);
+        bar.mr.sharedMaterial = isBlack ? _blackMat : _whiteMat;
+
+        bar.go.SetActive(true);
+    }
+
+    // -------------------------------------------------------------------------
+    // Pool
+    // -------------------------------------------------------------------------
+
+    private BarInstance AcquireBar()
+    {
+        foreach (var b in _pool)
+        {
+            if (!b.inUse)
+            {
+                b.inUse = true;
+                b.go.SetActive(true);
+                return b;
+            }
+        }
+
+        var go = new GameObject("WaterfallBar");
+        go.transform.SetParent(transform, false);
+
+        var mf = go.AddComponent<MeshFilter>();
+        mf.sharedMesh = _cubeMesh;
+
+        var mr = go.AddComponent<MeshRenderer>();
+        mr.sharedMaterial = _whiteMat;
+        mr.allowOcclusionWhenDynamic = false;
+        mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        mr.receiveShadows = false;
+
+        // Remove collider if cube mesh added one
+        var col = go.GetComponent<Collider>();
+        if (col != null) Destroy(col);
+
+        var bar = new BarInstance
+        {
+            go = go, mr = mr,
+            pb = new MaterialPropertyBlock(),
+            inUse = true
+        };
+        _pool.Add(bar);
+        return bar;
+    }
+
+    private void ReleaseBar(BarInstance bar)
+    {
+        bar.inUse = false;
+        bar.go.SetActive(false);
+    }
+
+    private void CreateMaterials()
+    {
+        _whiteMat = new Material(Shader.Find("Sprites/Default"));
+        _whiteMat.mainTexture = Texture2D.whiteTexture;
+        _whiteMat.renderQueue = 2998;
+
+        _blackMat = new Material(Shader.Find("Sprites/Default"));
+        _blackMat.mainTexture = Texture2D.whiteTexture;
+        _blackMat.renderQueue = 2997;
+    }
+
+    public void ResetBars()
+    {
+        foreach (var bar in _pool)
+            ReleaseBar(bar);
+        _activeMap.Clear();
+        _nextNoteIndex = 0;
+    }
+
+    private void OnDisable()
+    {
+        ResetBars();
+    }
+}

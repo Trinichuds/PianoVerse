@@ -6,6 +6,9 @@ public class PianoKeyLights : MonoBehaviour
     public PianoKeyboardMapper mapper;
     public Midi88KeyInput midiInput;
 
+    [Header("Optional — Guide/Hit Feedback")]
+    public NoteMapPlayer noteMapPlayer;
+
     [Header("Sparkle")]
     [Range(1, 10)]
     public int burstCount = 3;
@@ -14,23 +17,60 @@ public class PianoKeyLights : MonoBehaviour
 
     private static readonly Color WhitePressed = new(0.2f, 1f, 0.4f, 0.92f);
     private static readonly Color BlackPressed = new(1f, 0.45f, 0.05f, 0.92f);
+    private static readonly Color GuideWhite = new(0.3f, 0.5f, 1f, 0.5f);
+    private static readonly Color GuideBlack = new(0.6f, 0.35f, 0.9f, 0.5f);
+    private static readonly Color PerfectColor = new(1f, 1f, 0.3f, 0.95f);
+    private static readonly Color GreatColor   = new(0.2f, 1f, 0.4f, 0.92f);
+    private static readonly Color GoodColor    = new(0.4f, 0.7f, 1f, 0.8f);
+    private static readonly Color MissColor    = new(1f, 0.15f, 0.1f, 0.9f);
+    private static readonly Color WrongColor   = new(1f, 0f, 0f, 0.7f);
+    private static readonly Color CorrectColor = new(0.2f, 1f, 0.5f, 0.9f);
 
     private ParticleSystem _sparklePS;
     private readonly HashSet<int> _activeKeys = new();
     private readonly Dictionary<int, Color> _activeColors = new();
+    private readonly HashSet<int> _guideKeys = new();
+    private readonly Dictionary<int, float> _flashTimers = new();
+    private readonly List<int> _expiredFlashes = new();
+
+    private const float FlashDuration = 0.25f;
+
+    private bool SongActive => noteMapPlayer != null && noteMapPlayer.IsPlaying;
 
     private void OnEnable()
     {
-        if (midiInput == null) return;
-        midiInput.NotePressed += OnNotePressed;
-        midiInput.NoteFullyEnded += OnNoteEnded;
+        if (midiInput != null)
+        {
+            midiInput.NotePressed    += OnNotePressed;
+            midiInput.NoteFullyEnded += OnNoteEnded;
+        }
+
+        if (noteMapPlayer != null)
+        {
+            noteMapPlayer.GuideNoteOn       += OnGuideOn;
+            noteMapPlayer.GuideNoteOff      += OnGuideOff;
+            noteMapPlayer.NoteJudged        += OnNoteJudged;
+            noteMapPlayer.WrongKeyPressed   += OnWrongKey;
+            noteMapPlayer.CorrectKeyPressed += OnCorrectKey;
+        }
     }
 
     private void OnDisable()
     {
-        if (midiInput == null) return;
-        midiInput.NotePressed -= OnNotePressed;
-        midiInput.NoteFullyEnded -= OnNoteEnded;
+        if (midiInput != null)
+        {
+            midiInput.NotePressed    -= OnNotePressed;
+            midiInput.NoteFullyEnded -= OnNoteEnded;
+        }
+
+        if (noteMapPlayer != null)
+        {
+            noteMapPlayer.GuideNoteOn       -= OnGuideOn;
+            noteMapPlayer.GuideNoteOff      -= OnGuideOff;
+            noteMapPlayer.NoteJudged        -= OnNoteJudged;
+            noteMapPlayer.WrongKeyPressed   -= OnWrongKey;
+            noteMapPlayer.CorrectKeyPressed -= OnCorrectKey;
+        }
     }
 
     private void Start()
@@ -40,16 +80,48 @@ public class PianoKeyLights : MonoBehaviour
 
     private void Update()
     {
-        if (_sparklePS == null || !mapper.IsCalibrated || streamRate <= 0) return;
+        if (!mapper.IsCalibrated) return;
 
-        foreach (int key in _activeKeys)
+        // Sparkle stream for held keys
+        if (_sparklePS != null && streamRate > 0)
         {
-            Vector3 pos = mapper.GetKeyPosition(key);
-            float hw = mapper.GetKeyHalfWidth(key);
-            Color col = _activeColors.TryGetValue(key, out var c) ? c : Color.white;
-            EmitSparkles(pos, col, streamRate, hw);
+            foreach (int key in _activeKeys)
+            {
+                Vector3 pos = mapper.GetKeyPosition(key);
+                float hw = mapper.GetKeyHalfWidth(key);
+                Color col = _activeColors.TryGetValue(key, out var c) ? c : Color.white;
+                EmitSparkles(pos, col, streamRate, hw);
+            }
+        }
+
+        // Fade out flash timers
+        _expiredFlashes.Clear();
+        var keys = new List<int>(_flashTimers.Keys);
+        foreach (int k in keys)
+        {
+            float t = _flashTimers[k] - Time.deltaTime;
+            if (t <= 0f)
+            {
+                _expiredFlashes.Add(k);
+            }
+            else
+            {
+                _flashTimers[k] = t;
+            }
+        }
+        foreach (int k in _expiredFlashes)
+        {
+            _flashTimers.Remove(k);
+            if (_guideKeys.Contains(k))
+                SetGuideColor(k);
+            else if (!_activeKeys.Contains(k))
+                mapper.ResetKeyIndicator(k);
         }
     }
+
+    // -------------------------------------------------------------------------
+    // MIDI input — always fires, free-play AND song mode
+    // -------------------------------------------------------------------------
 
     private void OnNotePressed(int keyIndex, int midiNote, float velocity)
     {
@@ -72,10 +144,89 @@ public class PianoKeyLights : MonoBehaviour
     {
         if (!mapper.IsCalibrated) return;
 
-        mapper.ResetKeyIndicator(keyIndex);
         _activeKeys.Remove(keyIndex);
         _activeColors.Remove(keyIndex);
+
+        // Restore to guide color if song is playing, otherwise idle
+        if (SongActive && _guideKeys.Contains(keyIndex))
+            SetGuideColor(keyIndex);
+        else
+            mapper.ResetKeyIndicator(keyIndex);
     }
+
+    // -------------------------------------------------------------------------
+    // Guide notes
+    // -------------------------------------------------------------------------
+
+    private void OnGuideOn(int keyIndex, float duration)
+    {
+        if (!mapper.IsCalibrated) return;
+        _guideKeys.Add(keyIndex);
+        SetGuideColor(keyIndex);
+    }
+
+    private void OnGuideOff(int keyIndex)
+    {
+        _guideKeys.Remove(keyIndex);
+        if (!_activeKeys.Contains(keyIndex) && !_flashTimers.ContainsKey(keyIndex))
+            mapper.ResetKeyIndicator(keyIndex);
+    }
+
+    private void SetGuideColor(int keyIndex)
+    {
+        Color c = mapper.KeyIsBlack(keyIndex) ? GuideBlack : GuideWhite;
+        mapper.SetKeyIndicatorColor(keyIndex, c);
+    }
+
+    // -------------------------------------------------------------------------
+    // Hit quality feedback
+    // -------------------------------------------------------------------------
+
+    private void OnNoteJudged(HitResult result)
+    {
+        if (!mapper.IsCalibrated) return;
+
+        Color c = result.quality switch
+        {
+            HitQuality.Perfect => PerfectColor,
+            HitQuality.Great   => GreatColor,
+            HitQuality.Good    => GoodColor,
+            _                  => MissColor
+        };
+
+        mapper.SetKeyIndicatorColor(result.keyIndex, c);
+        _flashTimers[result.keyIndex] = FlashDuration;
+
+        if (result.quality != HitQuality.Miss && _sparklePS != null)
+        {
+            int count = result.quality == HitQuality.Perfect ? burstCount * 2 : burstCount;
+            EmitSparkles(mapper.GetKeyPosition(result.keyIndex), c, count,
+                mapper.GetKeyHalfWidth(result.keyIndex));
+        }
+    }
+
+    private void OnWrongKey(int keyIndex)
+    {
+        if (!mapper.IsCalibrated) return;
+        mapper.SetKeyIndicatorColor(keyIndex, WrongColor);
+        _flashTimers[keyIndex] = FlashDuration;
+    }
+
+    private void OnCorrectKey(int keyIndex)
+    {
+        if (!mapper.IsCalibrated) return;
+        mapper.SetKeyIndicatorColor(keyIndex, CorrectColor);
+        _activeKeys.Add(keyIndex);
+        _activeColors[keyIndex] = CorrectColor;
+
+        if (_sparklePS != null)
+            EmitSparkles(mapper.GetKeyPosition(keyIndex), CorrectColor, burstCount,
+                mapper.GetKeyHalfWidth(keyIndex));
+    }
+
+    // -------------------------------------------------------------------------
+    // Sparkle system
+    // -------------------------------------------------------------------------
 
     private void EmitSparkles(Vector3 center, Color color, int count, float halfWidth)
     {
@@ -91,7 +242,6 @@ public class PianoKeyLights : MonoBehaviour
                 Random.Range(-0.06f, 0.06f),
                 Random.Range(0.12f, 0.3f),
                 Random.Range(-0.06f, 0.06f));
-            // Bright white-hot core with a hint of the key color
             ep.startColor = Color.Lerp(Color.white, color, Random.Range(0.05f, 0.2f));
             ep.startSize = Random.Range(0.001f, 0.002f);
             ep.startLifetime = Random.Range(0.08f, 0.18f);
