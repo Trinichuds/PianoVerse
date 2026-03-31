@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayMode { RealTime, Practice }
+public enum PlayMode { RealTime, Practice, Watch }
 public enum HitQuality { Perfect, Great, Good, Miss }
 
 [Serializable]
@@ -26,6 +26,8 @@ public class NoteMapPlayer : MonoBehaviour
 {
     [Header("References")]
     public Midi88KeyInput midiInput;
+    [Tooltip("For Watch mode audio playback. Auto-found if not set.")]
+    public NativePianoSampler pianoSampler;
 
     [Header("Mode")]
     public PlayMode mode = PlayMode.Practice;
@@ -196,6 +198,8 @@ public class NoteMapPlayer : MonoBehaviour
             midiInput = FindObjectOfType<Midi88KeyInput>();
         if (midiInput == null)
             Debug.LogError("[NoteMapPlayer] No Midi88KeyInput found! Assign it in the Inspector.");
+        if (pianoSampler == null)
+            pianoSampler = FindObjectOfType<NativePianoSampler>();
     }
 
     private void OnEnable()
@@ -217,7 +221,9 @@ public class NoteMapPlayer : MonoBehaviour
     {
         if (!IsPlaying || IsPaused || _notes == null) return;
 
-        if (mode == PlayMode.RealTime)
+        if (mode == PlayMode.Watch)
+            UpdateWatch();
+        else if (mode == PlayMode.RealTime)
             UpdateRealTime();
         else
             UpdatePractice();
@@ -345,6 +351,23 @@ public class NoteMapPlayer : MonoBehaviour
     }
 
     // -------------------------------------------------------------------------
+    // Watch mode — just plays through, no input, no scoring
+    // -------------------------------------------------------------------------
+
+    private void UpdateWatch()
+    {
+        _playbackTime += Time.deltaTime;
+
+        // Song finished when all guides have ended
+        if (_playbackTime >= CurrentMap.durationSeconds && _guideEnds.Count == 0)
+        {
+            IsPlaying = false;
+            SongFinished?.Invoke();
+            Debug.Log("[NoteMapPlayer] Watch playback complete.");
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Practice mode
     // -------------------------------------------------------------------------
 
@@ -420,6 +443,9 @@ public class NoteMapPlayer : MonoBehaviour
 
     private void UpdateGuides()
     {
+        bool watchAudio = mode == PlayMode.Watch && pianoSampler != null && pianoSampler.IsReady;
+        int midiBase = 21; // A0
+
         // Start new guides
         while (_nextGuideIndex < _notes.Length)
         {
@@ -436,6 +462,11 @@ public class NoteMapPlayer : MonoBehaviour
                 {
                     _guideRefCount[k] = count + 1;
                 }
+
+                // Watch mode: play the note audio
+                if (watchAudio)
+                    WatchNoteOn(k + midiBase, 0.8f);
+
                 _guideEnds.Add((_nextGuideIndex, note.start + note.dur));
                 _nextGuideIndex++;
             }
@@ -454,10 +485,24 @@ public class NoteMapPlayer : MonoBehaviour
                 {
                     _guideRefCount.Remove(k);
                     GuideNoteOff?.Invoke(k);
+
+                    // Watch mode: release the note audio
+                    if (watchAudio)
+                        WatchNoteOff(k + midiBase);
                 }
                 _guideEnds.RemoveAt(i);
             }
         }
+    }
+
+    private void WatchNoteOn(int midiNote, float velocity)
+    {
+        pianoSampler.PlayNote(midiNote, velocity);
+    }
+
+    private void WatchNoteOff(int midiNote)
+    {
+        pianoSampler.StopNote(midiNote);
     }
 
     private void ClearAllGuides()

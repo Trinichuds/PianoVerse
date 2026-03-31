@@ -160,7 +160,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: ' '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -848,7 +848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1efce358231fde542bfeffe45e1a9920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outputText: {fileID: 36865704}
+  outputText: {fileID: 0}
   refreshUiEveryFrame: 1
   minMidiNote: 21
   maxMidiNote: 108
@@ -978,6 +978,8 @@ MonoBehaviour:
   glowPadding: 0.003
   topLineThickness: 0.001
   topLineColor: {r: 0.7, g: 0.7, b: 0.8, a: 0.4}
+  glowLineThickness: 0.008
+  glowLineColor: {r: 0.4, g: 0.5, b: 1, a: 0.25}
 --- !u!23 &1029227195
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1077,6 +1079,7 @@ MonoBehaviour:
   perfectWindow: 0.05
   greatWindow: 0.1
   goodWindow: 0.15
+  realTimeCountdown: 3
   stepTolerance: 0.03
 --- !u!4 &1279276321
 Transform:
@@ -1138,7 +1141,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1569165174}
-  - component: {fileID: 1569165173}
+  - component: {fileID: 1569165175}
   m_Layer: 0
   m_Name: song
   m_TagString: Untagged
@@ -1146,21 +1149,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1569165173
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1569165172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1ea46049ac33724d973724a1bd55a75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 1279276320}
-  waterfall: {fileID: 779944025}
-  hudText: {fileID: 36865704}
 --- !u!4 &1569165174
 Transform:
   m_ObjectHideFlags: 0
@@ -1176,6 +1164,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1569165175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1569165172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37e100230be32214a83df14cd1ed842b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1279276320}
+  waterfall: {fileID: 779944025}
+  centerEyeAnchor: {fileID: 1400688074}
+  calibrationInput: {fileID: 1029227193}
+  pianoSampler: {fileID: 424850667}
 --- !u!1 &1603821459
 GameObject:
   m_ObjectHideFlags: 0

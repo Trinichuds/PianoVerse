@@ -28,6 +28,28 @@ public class NativePianoSampler : MonoBehaviour
 
     public bool IsReady => initialized && engineHandle != IntPtr.Zero;
 
+    public NativeAudioInterop.BackendKind CurrentBackend => backendKind;
+
+    public void SetBackend(NativeAudioInterop.BackendKind kind)
+    {
+        backendKind = kind;
+        initializationAttempted = false;
+    }
+
+    /// <summary>Trigger a note programmatically (for Watch mode playback).</summary>
+    public void PlayNote(int midiNote, float velocity)
+    {
+        if (!EnsureReady()) return;
+        NativeAudioInterop.TryNoteOn(engineHandle, midiNote, Mathf.Clamp01(velocity));
+    }
+
+    /// <summary>Release a note programmatically (for Watch mode playback).</summary>
+    public void StopNote(int midiNote)
+    {
+        if (!EnsureReady()) return;
+        NativeAudioInterop.TryNoteOff(engineHandle, midiNote);
+    }
+
     private void Start()
     {
         if (initializeOnStart)
