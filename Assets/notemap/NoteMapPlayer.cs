@@ -35,6 +35,10 @@ public class NoteMapPlayer : MonoBehaviour
     public float greatWindow   = 0.100f;
     public float goodWindow    = 0.150f;
 
+    [Header("Real-Time Countdown")]
+    [Tooltip("Seconds of lead-in before real-time playback begins (waterfall scrolls in).")]
+    public float realTimeCountdown = 3f;
+
     [Header("Step Grouping — Practice")]
     [Tooltip("Notes within this many seconds of each other form one step.")]
     public float stepTolerance = 0.080f;
@@ -107,7 +111,8 @@ public class NoteMapPlayer : MonoBehaviour
     private List<NoteStep> _steps;
     private int _currentStepIndex;
     private readonly HashSet<int> _heldKeys = new();
-    private bool _stepSatisfied; // all keys in current step are held
+    private readonly HashSet<int> _freshPresses = new(); // keys pressed during current step
+    private bool _stepSatisfied; // all keys in current step are pressed
 
     private class NoteStep
     {
@@ -147,7 +152,7 @@ public class NoteMapPlayer : MonoBehaviour
         }
         else
         {
-            _playbackTime = 0f;
+            _playbackTime = -realTimeCountdown;
         }
 
         Debug.Log($"[NoteMapPlayer] Playing '{CurrentMap.title}' in {mode} mode — " +
@@ -370,24 +375,25 @@ public class NoteMapPlayer : MonoBehaviour
                 }
 
                 _stepSatisfied = false;
+                _freshPresses.Clear();
                 FireStepChanged();
             }
         }
         else
         {
-            // Freeze — check if all required keys are held
+            // Freeze — check if all required keys were freshly pressed this step
             var step = _steps[_currentStepIndex];
-            bool allHeld = true;
+            bool allPressed = true;
             foreach (int k in step.keys)
             {
-                if (!_heldKeys.Contains(k))
+                if (!_freshPresses.Contains(k))
                 {
-                    allHeld = false;
+                    allPressed = false;
                     break;
                 }
             }
 
-            if (allHeld)
+            if (allPressed)
                 _stepSatisfied = true;
         }
     }
@@ -400,7 +406,10 @@ public class NoteMapPlayer : MonoBehaviour
         bool isRequired = Array.IndexOf(step.keys, keyIndex) >= 0;
 
         if (isRequired)
+        {
+            _freshPresses.Add(keyIndex);
             CorrectKeyPressed?.Invoke(keyIndex);
+        }
         else
             WrongKeyPressed?.Invoke(keyIndex);
     }
@@ -511,6 +520,7 @@ public class NoteMapPlayer : MonoBehaviour
         _guideEnds.Clear();
         _guideRefCount.Clear();
         _heldKeys.Clear();
+        _freshPresses.Clear();
 
         PerfectCount = 0;
         GreatCount   = 0;

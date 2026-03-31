@@ -30,6 +30,12 @@ public class PianoCalibrationInput : MonoBehaviour
     private const float MarkerSize = 0.02f;
     private const float ForwardOffset = 0.05f;
 
+    private void Awake()
+    {
+        if (sfx == null) sfx = GetComponentInChildren<CalibrationSFX>();
+        if (sfx == null) sfx = FindObjectOfType<CalibrationSFX>();
+    }
+
     private void Update()
     {
         if (rightControllerAnchor == null || mapper == null) return;

@@ -28,6 +28,7 @@ public class WaterfallRenderer : MonoBehaviour
 
     private Material _whiteMat;
     private Material _blackMat;
+    private Material _headMat;
     private Mesh _cubeMesh;
 
     private readonly List<BarInstance> _pool = new();
@@ -46,6 +47,10 @@ public class WaterfallRenderer : MonoBehaviour
         public MaterialPropertyBlock pb;
         public int noteIndex;
         public bool inUse;
+        // Note head (darker bottom cap)
+        public GameObject headGo;
+        public MeshRenderer headMr;
+        public MaterialPropertyBlock headPb;
     }
 
     private void Start()
@@ -91,7 +96,7 @@ public class WaterfallRenderer : MonoBehaviour
         {
             var note = notes[kvp.Key];
             float barTop = ((note.start + note.dur) - pt) * fallSpeed;
-            if (barTop < -trailTime * fallSpeed)
+            if (barTop <= 0f)
             {
                 ReleaseBar(kvp.Value);
                 _removeList.Add(kvp.Key);
@@ -124,6 +129,8 @@ public class WaterfallRenderer : MonoBehaviour
             UpdateBar(kvp.Value, notes[kvp.Key], pt);
     }
 
+    private const float HeadHeight = 0.012f; // darker bottom cap height
+
     private void UpdateBar(BarInstance bar, NoteEvent note, float playbackTime)
     {
         bool isBlack = mapper.KeyIsBlack(note.key);
@@ -133,24 +140,32 @@ public class WaterfallRenderer : MonoBehaviour
         float centerX = Vector3.Dot(keyPos - _topLineOrigin, _kRight);
 
         float barBottom = (note.start - playbackTime) * fallSpeed;
-        float barHeight = Mathf.Max(note.dur * fallSpeed, 0.003f);
+        float barTop = barBottom + Mathf.Max(note.dur * fallSpeed, 0.003f);
 
-        bool active = barBottom <= 0f && barBottom + barHeight > 0f;
+        // Clamp bottom to play line (0) — bar shrinks as it crosses, then disappears
+        float clampedBottom = Mathf.Max(barBottom, 0f);
+        float visibleHeight = barTop - clampedBottom;
 
-        // Position: center of the cube in world space
+        if (visibleHeight <= 0f)
+        {
+            bar.go.SetActive(false);
+            if (bar.headGo != null) bar.headGo.SetActive(false);
+            return;
+        }
+
+        bool active = barBottom <= 0f && barTop > 0f;
+        Quaternion rot = Quaternion.LookRotation(mapper.TopLineForward, _kUp);
+
+        // Main body
         Vector3 center = _topLineOrigin
             + _kRight * centerX
-            + _kUp * (barBottom + barHeight * 0.5f)
+            + _kUp * (clampedBottom + visibleHeight * 0.5f)
             + mapper.TopLineForward * barThickness * 0.5f;
 
         bar.go.transform.position = center;
+        bar.go.transform.rotation = rot;
+        bar.go.transform.localScale = new Vector3(halfWidth * 2f, visibleHeight, barThickness);
 
-        // Scale: width along keyboard, height = bar duration, depth = thickness
-        // We need to orient the cube so X = keyboard direction, Y = up, Z = forward
-        bar.go.transform.rotation = Quaternion.LookRotation(mapper.TopLineForward, _kUp);
-        bar.go.transform.localScale = new Vector3(halfWidth * 2f, barHeight, barThickness);
-
-        // Color
         Color c = active
             ? (isBlack ? blackActiveColor : whiteActiveColor)
             : (isBlack ? blackNoteColor : whiteNoteColor);
@@ -158,8 +173,38 @@ public class WaterfallRenderer : MonoBehaviour
         bar.pb.SetColor("_Color", c);
         bar.mr.SetPropertyBlock(bar.pb);
         bar.mr.sharedMaterial = isBlack ? _blackMat : _whiteMat;
-
         bar.go.SetActive(true);
+
+        // Note head — darker cap at the note's true bottom (unclamped)
+        if (bar.headGo != null)
+        {
+            // Head stays at the original barBottom, clamped to play line
+            float headBottom = Mathf.Max(barBottom, 0f);
+            float headTop = Mathf.Min(barBottom + HeadHeight, barTop);
+            float headH = headTop - headBottom;
+
+            if (headH <= 0f)
+            {
+                bar.headGo.SetActive(false);
+                return;
+            }
+
+            Vector3 headCenter = _topLineOrigin
+                + _kRight * centerX
+                + _kUp * (headBottom + headH * 0.5f)
+                - mapper.TopLineForward * 0.001f; // nudge toward viewer so it's visible from above
+
+            bar.headGo.transform.position = headCenter;
+            bar.headGo.transform.rotation = rot;
+            bar.headGo.transform.localScale = new Vector3(halfWidth * 2f + 0.001f, headH, barThickness + 0.002f);
+
+            Color headColor = c * 0.25f; // very dark
+            headColor.a = Mathf.Min(c.a + 0.45f, 1f); // very opaque
+            bar.headPb.SetColor("_Color", headColor);
+            bar.headMr.SetPropertyBlock(bar.headPb);
+            bar.headMr.sharedMaterial = _headMat;
+            bar.headGo.SetActive(true);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -194,10 +239,23 @@ public class WaterfallRenderer : MonoBehaviour
         var col = go.GetComponent<Collider>();
         if (col != null) Destroy(col);
 
+        // Note head — separate object so it has independent transform
+        var headGo = new GameObject("WaterfallHead");
+        headGo.transform.SetParent(transform, false);
+        var headMf = headGo.AddComponent<MeshFilter>();
+        headMf.sharedMesh = _cubeMesh;
+        var headMr = headGo.AddComponent<MeshRenderer>();
+        headMr.sharedMaterial = _whiteMat;
+        headMr.allowOcclusionWhenDynamic = false;
+        headMr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        headMr.receiveShadows = false;
+
         var bar = new BarInstance
         {
             go = go, mr = mr,
             pb = new MaterialPropertyBlock(),
+            headGo = headGo, headMr = headMr,
+            headPb = new MaterialPropertyBlock(),
             inUse = true
         };
         _pool.Add(bar);
@@ -208,6 +266,7 @@ public class WaterfallRenderer : MonoBehaviour
     {
         bar.inUse = false;
         bar.go.SetActive(false);
+        if (bar.headGo != null) bar.headGo.SetActive(false);
     }
 
     private void CreateMaterials()
@@ -219,6 +278,10 @@ public class WaterfallRenderer : MonoBehaviour
         _blackMat = new Material(Shader.Find("Sprites/Default"));
         _blackMat.mainTexture = Texture2D.whiteTexture;
         _blackMat.renderQueue = 2997;
+
+        _headMat = new Material(Shader.Find("Sprites/Default"));
+        _headMat.mainTexture = Texture2D.whiteTexture;
+        _headMat.renderQueue = 2999; // renders on top of bar body
     }
 
     public void ResetBars()
