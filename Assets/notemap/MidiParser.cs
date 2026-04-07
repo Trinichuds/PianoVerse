@@ -103,6 +103,28 @@ public static class MidiParser
 
         noteEvents.Sort((a, b) => a.start.CompareTo(b.start));
 
+        // Snap chord notes: if notes are within a small window, align them to the earliest start.
+        // This fixes micro-offsets in MIDI data where chord notes are staggered by a few ticks.
+        const float SnapWindow = 0.040f; // 40ms — snaps fast arpeggios into readable chords
+        if (noteEvents.Count > 1)
+        {
+            float groupStart = noteEvents[0].start;
+            for (int i = 1; i < noteEvents.Count; i++)
+            {
+                if (noteEvents[i].start - groupStart <= SnapWindow)
+                {
+                    // Snap to group start, extend duration to compensate
+                    float diff = noteEvents[i].start - groupStart;
+                    noteEvents[i].dur += diff;
+                    noteEvents[i].start = groupStart;
+                }
+                else
+                {
+                    groupStart = noteEvents[i].start;
+                }
+            }
+        }
+
         float duration = noteEvents.Count > 0
             ? noteEvents[noteEvents.Count - 1].start + noteEvents[noteEvents.Count - 1].dur
             : 0f;
