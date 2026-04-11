@@ -110,6 +110,7 @@ public class Midi88KeyInput : MonoBehaviour
         connectedDevices.Remove(midi);
     }
 
+    // Called when a MIDI key is pressed. Adds to held set and fires NotePressed event.
     private void HandleNoteOn(MidiNoteControl noteControl, float velocity)
     {
         int midiNote = noteControl.noteNumber;
@@ -125,6 +126,8 @@ public class Midi88KeyInput : MonoBehaviour
         MarkUiDirty();
     }
 
+    // Called when a MIDI key is released. If sustain is on, note becomes sustained.
+    // Otherwise fires NoteFullyEnded.
     private void HandleNoteOff(MidiNoteControl noteControl)
     {
         int midiNote = noteControl.noteNumber;
@@ -150,6 +153,7 @@ public class Midi88KeyInput : MonoBehaviour
         MarkUiDirty();
     }
 
+    // Handles sustain pedal (CC#64). When released, all sustained-only notes end.
     private void HandleControlChange(MidiValueControl cc, float value)
     {
         if (cc.controlNumber != sustainCc) return;

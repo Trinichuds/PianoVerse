@@ -15,6 +15,7 @@ public class PianoVoice : MonoBehaviour
         audioSource = source;
     }
 
+    // Starts playback of a clip with given volume and pitch. Cancels any active fade.
     public void Play(int midiNote, AudioClip clip, float volume, float pitch)
     {
         if (fadeCoroutine != null)
@@ -59,6 +60,7 @@ public class PianoVoice : MonoBehaviour
         fadeCoroutine = StartCoroutine(FadeOutRoutine(fadeTime));
     }
 
+    // Lerps volume to 0 over fadeTime seconds, then stops and resets the source.
     private IEnumerator FadeOutRoutine(float fadeTime)
     {
         float startVolume = audioSource.volume;

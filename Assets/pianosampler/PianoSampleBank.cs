@@ -37,6 +37,7 @@ public class PianoSampleBank : ScriptableObject
         return null;
     }
 
+    // Returns the clip whose velocity range contains the given value, or the last layer.
     public AudioClip GetClipExact(int midiNote, int velocity)
     {
         var key = GetKeySample(midiNote);
@@ -53,6 +54,7 @@ public class PianoSampleBank : ScriptableObject
         return key.velocityLayers[key.velocityLayers.Length - 1].clip;
     }
 
+    // Finds the closest MIDI note that has samples, for pitch-shift fallback.
     public int FindNearestSampledMidiNote(int targetMidiNote)
     {
         int bestMidiNote = -1;

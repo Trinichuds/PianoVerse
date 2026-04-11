@@ -86,6 +86,7 @@ public class SongSelector : MonoBehaviour
     // Input
     // -------------------------------------------------------------------------
 
+    // Left thumbstick left/right to browse songs. Stops playback when switching.
     private void HandleThumbstick()
     {
         Vector2 stick = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick);
@@ -111,6 +112,7 @@ public class SongSelector : MonoBehaviour
         }
     }
 
+    // Left index trigger toggles play/stop for the selected song.
     private void HandleTrigger()
     {
         float trigger = OVRInput.Get(OVRInput.RawAxis1D.LIndexTrigger);
@@ -137,6 +139,7 @@ public class SongSelector : MonoBehaviour
         }
     }
 
+    // Left grip toggles between Practice and RealTime mode. Restarts if playing.
     private void HandleGrip()
     {
         float grip = OVRInput.Get(OVRInput.RawAxis1D.LHandTrigger);

@@ -22,6 +22,8 @@ public static class MidiParser
         public int  microsPerBeat;
     }
 
+    // Main entry point. Reads raw MIDI bytes, extracts all note on/off events,
+    // pairs them into durations, converts ticks to seconds, snaps chords, and returns a NoteMap.
     public static NoteMap Parse(byte[] data, string title = "")
     {
         int pos = 0;
@@ -141,6 +143,7 @@ public static class MidiParser
         };
     }
 
+    // Converts a tick range to seconds, filters to 88-key range, and adds to results.
     private static void FlushNote(long startTick, long endTick, byte midiNote,
         List<TempoChange> tempos, int ppq, List<NoteEvent> noteEvents)
     {
@@ -163,6 +166,8 @@ public static class MidiParser
     // Track parsing
     // -------------------------------------------------------------------------
 
+    // Reads a single MIDI track. Handles running status, meta events (tempo),
+    // SysEx, and extracts Note On/Off events with absolute tick positions.
     private static void ParseTrack(byte[] data, ref int pos, int trackEnd,
         List<RawNote> rawNotes, List<TempoChange> tempoChanges)
     {
@@ -250,6 +255,7 @@ public static class MidiParser
         }
     }
 
+    // Returns how many data bytes follow a MIDI status byte.
     private static int DataBytesForEvent(byte eventType) => eventType switch
     {
         0xC0 or 0xD0 => 1,
@@ -261,6 +267,8 @@ public static class MidiParser
     // Tick → seconds
     // -------------------------------------------------------------------------
 
+    // Converts absolute MIDI ticks to seconds using the tempo change list.
+    // Walks through tempo changes, accumulating time for each segment.
     private static float TicksToSeconds(long tick, List<TempoChange> tempos, int ppq)
     {
         double seconds   = 0;
@@ -308,6 +316,7 @@ public static class MidiParser
         return v;
     }
 
+    // Reads a MIDI variable-length quantity (1-4 bytes, 7 bits per byte).
     private static int ReadVLQ(byte[] data, ref int pos, int limit)
     {
         int  v = 0;

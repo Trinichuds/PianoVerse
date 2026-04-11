@@ -2,6 +2,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
+// P/Invoke bridge to NativePianoBackend.dll. Wraps all native function calls
+// with null checks and platform guards. Only active on Windows builds.
 public static class NativeAudioInterop
 {
     public enum BackendKind

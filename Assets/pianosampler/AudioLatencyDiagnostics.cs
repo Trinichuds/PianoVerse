@@ -2,6 +2,7 @@ using UnityEngine;
 
 public static class AudioLatencyDiagnostics
 {
+    // Runs once at startup and logs Unity's audio config (sample rate, buffer, latency).
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Report()
     {

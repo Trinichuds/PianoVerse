@@ -31,6 +31,7 @@ public class CalibrationSFX : MonoBehaviour
         _source.PlayOneShot(_chime, 0.6f);
     }
 
+    // Generates a sine wave AudioClip with quadratic fade-out envelope.
     private static AudioClip CreateTone(string name, float freq, float duration)
     {
         int sampleRate = 44100;
@@ -50,6 +51,7 @@ public class CalibrationSFX : MonoBehaviour
         return clip;
     }
 
+    // Generates a multi-frequency chime by summing sine waves with fade-out.
     private static AudioClip CreateChime(string name, float[] freqs, float duration)
     {
         int sampleRate = 44100;

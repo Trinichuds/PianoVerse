@@ -126,6 +126,7 @@ public class NoteMapPlayer : MonoBehaviour
     // Public API
     // -------------------------------------------------------------------------
 
+    // Stores the map and builds practice steps if in Practice mode.
     public void LoadMap(NoteMap map)
     {
         Stop();
@@ -136,6 +137,7 @@ public class NoteMapPlayer : MonoBehaviour
             _steps = BuildSteps(map);
     }
 
+    // Starts playback. Practice starts at step 0, RealTime/Watch starts with countdown.
     public void Play()
     {
         if (CurrentMap == null || _notes == null || _notes.Length == 0) return;
@@ -265,6 +267,7 @@ public class NoteMapPlayer : MonoBehaviour
     // Real-time mode
     // -------------------------------------------------------------------------
 
+    // Advances time, brings notes into the hit window, and expires missed notes.
     private void UpdateRealTime()
     {
         _playbackTime += Time.deltaTime;
@@ -314,6 +317,7 @@ public class NoteMapPlayer : MonoBehaviour
         }
     }
 
+    // Finds the closest hittable note matching this key and judges timing accuracy.
     private void TryMatchHit(int keyIndex)
     {
         int   bestIndex = -1;
@@ -371,6 +375,7 @@ public class NoteMapPlayer : MonoBehaviour
     // Practice mode
     // -------------------------------------------------------------------------
 
+    // When step is satisfied, advances time to next step. Otherwise freezes and waits.
     private void UpdatePractice()
     {
         if (_steps == null || _currentStepIndex >= _steps.Count) return;
@@ -421,6 +426,7 @@ public class NoteMapPlayer : MonoBehaviour
         }
     }
 
+    // Checks if a pressed key is in the current step. Fires correct/wrong events.
     private void CheckPracticeInput(int keyIndex)
     {
         if (_steps == null || _currentStepIndex >= _steps.Count) return;
@@ -441,6 +447,9 @@ public class NoteMapPlayer : MonoBehaviour
     // Guide notes (both modes)
     // -------------------------------------------------------------------------
 
+    // Fires GuideNoteOn/Off events as notes enter/exit playback time.
+    // Uses ref-counting so overlapping notes on the same key work correctly.
+    // In Watch mode, also triggers audio playback for each note.
     private void UpdateGuides()
     {
         bool watchAudio = mode == PlayMode.Watch && pianoSampler != null && pianoSampler.IsReady;
@@ -520,6 +529,8 @@ public class NoteMapPlayer : MonoBehaviour
     // Step building
     // -------------------------------------------------------------------------
 
+    // Groups notes into practice steps. Notes within stepTolerance seconds
+    // of each other become one step that must be played simultaneously.
     private List<NoteStep> BuildSteps(NoteMap map)
     {
         var steps = new List<NoteStep>();

@@ -83,6 +83,8 @@ public class NativePianoSampler : MonoBehaviour
         Shutdown();
     }
 
+    // Creates the native engine, uploads all samples from the bank, and starts audio.
+    // Returns false if DLL missing, no samples, or engine fails to start.
     public bool Initialize()
     {
         initializationAttempted = true;
@@ -167,6 +169,7 @@ public class NativePianoSampler : MonoBehaviour
         return true;
     }
 
+    // Stops the native engine and releases the handle.
     public void Shutdown()
     {
         initialized = false;
@@ -179,6 +182,7 @@ public class NativePianoSampler : MonoBehaviour
         engineHandle = IntPtr.Zero;
     }
 
+    // Reads PCM data from each AudioClip and uploads to native engine via P/Invoke.
     private bool UploadSampleBank()
     {
         NativeAudioInterop.TryClearSamples(engineHandle);
@@ -246,6 +250,7 @@ public class NativePianoSampler : MonoBehaviour
         return true;
     }
 
+    // Forwards MIDI note-on to the native engine for audio playback.
     private void OnNotePressed(int keyIndex, int midiNote, float velocityNormalized)
     {
         if (!EnsureReady())
@@ -280,6 +285,7 @@ public class NativePianoSampler : MonoBehaviour
         NativeAudioInterop.TrySetSustain(engineHandle, sustainOn);
     }
 
+    // Lazy initialization: tries to init on first use if not already done.
     private bool EnsureReady()
     {
         if (initialized)

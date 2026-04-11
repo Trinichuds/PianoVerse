@@ -83,6 +83,7 @@ public class PianoKeyLights : MonoBehaviour
         _sparklePS = CreateSparkleSystem();
     }
 
+    // Emits sparkle particles for held keys and fades out flash timers.
     private void Update()
     {
         if (!mapper.IsCalibrated) return;
@@ -128,6 +129,7 @@ public class PianoKeyLights : MonoBehaviour
     // MIDI input — always fires, free-play AND song mode
     // -------------------------------------------------------------------------
 
+    // Sets key color (green/orange), adds to active set, emits burst sparkles.
     private void OnNotePressed(int keyIndex, int midiNote, float velocity)
     {
         if (!mapper.IsCalibrated) return;
@@ -203,6 +205,7 @@ public class PianoKeyLights : MonoBehaviour
     // Hit quality feedback
     // -------------------------------------------------------------------------
 
+    // Flashes key color based on hit quality (yellow/green/blue/red) for 0.25s.
     private void OnNoteJudged(HitResult result)
     {
         if (!mapper.IsCalibrated) return;
@@ -249,6 +252,7 @@ public class PianoKeyLights : MonoBehaviour
     // Sparkle system
     // -------------------------------------------------------------------------
 
+    // Emits small upward-floating particles at the key position with random scatter.
     private void EmitSparkles(Vector3 center, Color color, int count, float halfWidth)
     {
         var ep = new ParticleSystem.EmitParams();
@@ -270,6 +274,7 @@ public class PianoKeyLights : MonoBehaviour
         }
     }
 
+    // Creates a particle system for key sparkles. World-space, manual emit, no looping.
     private ParticleSystem CreateSparkleSystem()
     {
         var go = new GameObject("KeySparkles");

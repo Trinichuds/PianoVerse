@@ -53,6 +53,7 @@ public class VRMenuPanel : MonoBehaviour
     private const float Padding = 20f;
     private const int MaxVisible = 8;
 
+    // Updates the list of menu items and rebuilds the UI.
     public void SetItems(string[] items)
     {
         _items = items ?? Array.Empty<string>();
@@ -70,6 +71,8 @@ public class VRMenuPanel : MonoBehaviour
         UpdateVisuals();
     }
 
+    // Destroys existing UI and rebuilds the entire panel from scratch:
+    // canvas, background, title, scroll arrows, item slots, and hint text.
     private void Rebuild()
     {
         foreach (Transform child in transform)
@@ -202,6 +205,7 @@ public class VRMenuPanel : MonoBehaviour
         UpdateVisuals();
     }
 
+    // Right thumbstick up/down to move selection. Uses dead zone and edge trigger.
     private void HandleStick()
     {
         Vector2 stick = OVRInput.Get(OVRInput.RawAxis2D.RThumbstick);
@@ -224,6 +228,7 @@ public class VRMenuPanel : MonoBehaviour
         EnsureSelectionVisible();
     }
 
+    // Adjusts scroll offset so the selected item is always within the visible window.
     private void EnsureSelectionVisible()
     {
         int visible = _slotTexts != null ? _slotTexts.Length : MaxVisible;
@@ -233,6 +238,7 @@ public class VRMenuPanel : MonoBehaviour
             _scrollOffset = _selectedIndex - visible + 1;
     }
 
+    // Right index trigger to confirm selection. Edge-triggered at 50% threshold.
     private void HandleTrigger()
     {
         float trigger = OVRInput.Get(OVRInput.RawAxis1D.RIndexTrigger);
@@ -256,6 +262,7 @@ public class VRMenuPanel : MonoBehaviour
             OnBack?.Invoke();
     }
 
+    // Refreshes slot text, highlight colors, scroll arrow visibility, and count indicator.
     private void UpdateVisuals()
     {
         if (_slotTexts == null) return;

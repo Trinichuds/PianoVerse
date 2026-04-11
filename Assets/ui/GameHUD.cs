@@ -32,6 +32,7 @@ public class GameHUD : MonoBehaviour
             Build();
     }
 
+    // Creates the world-space canvas with semi-transparent background and text element.
     private void Build()
     {
         // Canvas
@@ -83,6 +84,7 @@ public class GameHUD : MonoBehaviour
         HandleInput();
     }
 
+    // Anchors the HUD to top-left of the player's view each frame.
     private void FollowEye()
     {
         if (centerEyeAnchor == null) return;
@@ -99,6 +101,7 @@ public class GameHUD : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(forward, up);
     }
 
+    // Shows song title, mode, and mode-specific info (step count, score, or time).
     private void UpdateText()
     {
         if (_hudText == null || player == null) return;
@@ -146,6 +149,7 @@ public class GameHUD : MonoBehaviour
                          $"{mode}  {status}";
     }
 
+    // B=back, Y=pause, X=restart, left grip=toggle mode.
     private void HandleInput()
     {
         if (gameManager == null) return;

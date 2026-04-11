@@ -38,6 +38,8 @@ public class NoteMapLoader : MonoBehaviour
         StartCoroutine(LoadAll());
     }
 
+    // Scans Maps folder, auto-converts any .mid without a .json, loads all .json maps.
+    // Yields between files to avoid frame stalls.
     private IEnumerator LoadAll()
     {
         if (!Directory.Exists(MapsDir))
@@ -89,6 +91,7 @@ public class NoteMapLoader : MonoBehaviour
 
     // -------------------------------------------------------------------------
 
+    // Reads a .mid file, parses it with MidiParser, serializes to JSON, writes to disk.
     private static bool TryConvert(string midPath, string jsonPath)
     {
         try
@@ -111,6 +114,7 @@ public class NoteMapLoader : MonoBehaviour
         }
     }
 
+    // Deserializes a .json map file into a NoteMap object.
     private static NoteMap TryLoadJson(string jsonPath)
     {
         try

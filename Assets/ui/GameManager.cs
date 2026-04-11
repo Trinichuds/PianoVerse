@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
     };
     private int _currentAudioModeIndex;
 
+    // Auto-finds references, subscribes to map loader and song finish events, builds menus.
     private void Start()
     {
         if (centerEyeAnchor == null)
@@ -83,6 +84,7 @@ public class GameManager : MonoBehaviour
             player.SongFinished -= OnSongFinished;
     }
 
+    // Called when NoteMapLoader finishes loading all JSON maps.
     private void OnMapsLoaded(List<NoteMap> maps)
     {
         _maps = maps;
@@ -90,6 +92,7 @@ public class GameManager : MonoBehaviour
         RefreshMapList();
     }
 
+    // Returns to map select after a 2 second delay when song ends.
     private void OnSongFinished()
     {
         Invoke(nameof(ReturnToMapSelect), 2f);
@@ -104,6 +107,8 @@ public class GameManager : MonoBehaviour
     // State machine
     // -------------------------------------------------------------------------
 
+    // Transitions to a new state. Hides all panels, stops playback if leaving Playing,
+    // then shows the appropriate panel or HUD for the new state.
     private void EnterState(GameState newState)
     {
         // Hide everything first
@@ -176,6 +181,7 @@ public class GameManager : MonoBehaviour
     // Menus
     // -------------------------------------------------------------------------
 
+    // Creates all VRMenuPanel instances and GameHUD at runtime. No prefabs needed.
     private void BuildMenus()
     {
         // Main Menu
@@ -219,6 +225,7 @@ public class GameManager : MonoBehaviour
         hudGo.SetActive(false);
     }
 
+    // Updates the map select menu with song titles, BPM, and duration.
     private void RefreshMapList()
     {
         if (_maps == null || _maps.Count == 0)
@@ -267,6 +274,7 @@ public class GameManager : MonoBehaviour
         EnterState(GameState.MainMenu);
     }
 
+    // Loads the selected map into the player, resets waterfall, and starts playback.
     private void StartSong()
     {
         if (_maps == null || _selectedMapIndex >= _maps.Count) return;
@@ -308,6 +316,7 @@ public class GameManager : MonoBehaviour
         StartSong();
     }
 
+    // Cycles play mode: Practice > RealTime > Watch > Practice. Restarts song if playing.
     public void ToggleMode()
     {
         if (player == null) return;
@@ -369,6 +378,7 @@ public class GameManager : MonoBehaviour
         EnterState(GameState.MainMenu);
     }
 
+    // Shuts down current audio engine, switches backend, and reinitializes.
     private void ApplyAudioMode()
     {
         if (pianoSampler == null)
@@ -404,6 +414,7 @@ public class GameManager : MonoBehaviour
     // Positioning
     // -------------------------------------------------------------------------
 
+    // Places a panel 1.2m in front of the player's eyes, facing them.
     private void PositionPanelInFront(Transform panel)
     {
         if (centerEyeAnchor == null) return;
@@ -421,6 +432,7 @@ public class GameManager : MonoBehaviour
     // Update — B to summon/dismiss, retry map loader
     // -------------------------------------------------------------------------
 
+    // B button summons/dismisses menu. Also retries map loader if not ready yet.
     private void Update()
     {
         if (State != GameState.Playing && OVRInput.GetDown(OVRInput.RawButton.B))

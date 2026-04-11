@@ -76,6 +76,8 @@ public class WaterfallRenderer : MonoBehaviour
         Invoke(nameof(ResetBars), trailTime + 0.5f);
     }
 
+    // Each frame: releases bars that passed the play line, activates new bars
+    // entering the look-ahead window, and updates all bar positions/colors.
     private void LateUpdate()
     {
         if (mapper == null || !mapper.IsCalibrated) return;
@@ -131,6 +133,9 @@ public class WaterfallRenderer : MonoBehaviour
 
     private const float HeadHeight = 0.012f; // darker bottom cap height
 
+    // Positions a bar based on note timing. Bar falls toward play line (y=0).
+    // Green for white keys, orange for black. Brighter when crossing the play line.
+    // Includes a darker "note head" cap at the bottom for depth cue.
     private void UpdateBar(BarInstance bar, NoteEvent note, float playbackTime)
     {
         bool isBlack = mapper.KeyIsBlack(note.key);
@@ -211,6 +216,7 @@ public class WaterfallRenderer : MonoBehaviour
     // Pool
     // -------------------------------------------------------------------------
 
+    // Gets a bar from the pool, or creates a new one with cube mesh and note head.
     private BarInstance AcquireBar()
     {
         foreach (var b in _pool)

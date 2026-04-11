@@ -17,29 +17,33 @@
 
 namespace
 {
-    constexpr int kBackendWasapiShared = 0;
-    constexpr int kBackendWasapiExclusive = 1;
-    constexpr float kVelocityFloor = 0.2f;
+    constexpr int kBackendWasapiShared = 0;     // shared mode (system mixer, higher latency)
+    constexpr int kBackendWasapiExclusive = 1;  // exclusive mode (locks device, lower latency)
+    constexpr float kVelocityFloor = 0.2f;      // minimum gain so quiet notes are still audible
+
+    // Passed from C# via P/Invoke to configure the WASAPI engine
     struct EngineConfig
     {
         int sampleRate;
         int channelCount;
         int maxVoices;
-        int backend;
+        int backend;              // 0=shared, 1=exclusive
         int requestedBufferFrames;
-        int releaseFadeMs;
+        int releaseFadeMs;        // fade-out duration when note released
     };
 
+    // Metadata for a single audio sample uploaded from Unity
     struct SampleDescriptor
     {
-        int rootMidiNote;
-        int minVelocity;
-        int maxVelocity;
-        int channelCount;
+        int rootMidiNote;   // which piano key this sample was recorded from
+        int minVelocity;    // velocity range lower bound (1-127)
+        int maxVelocity;    // velocity range upper bound (1-127)
+        int channelCount;   // mono=1, stereo=2
         int sampleRate;
-        int frameCount;
+        int frameCount;     // total audio frames
     };
 
+    // Stored sample data with PCM buffer
     struct SampleLayer
     {
         int rootMidiNote = 60;
@@ -48,26 +52,30 @@ namespace
         int channelCount = 2;
         int sampleRate = 48000;
         int frameCount = 0;
-        std::vector<float> interleaved;
+        std::vector<float> interleaved; // raw PCM data (interleaved channels)
     };
 
+    // A single playing note in the voice pool
     struct Voice
     {
-        bool active = false;
-        bool releasing = false;
-        int targetMidiNote = -1;
-        uint64_t startCounter = 0;
+        bool active = false;          // currently producing audio
+        bool releasing = false;       // fading out after note-off
+        int targetMidiNote = -1;      // which MIDI note this voice plays
+        uint64_t startCounter = 0;    // monotonic counter for voice-stealing priority
         const SampleLayer* sample = nullptr;
-        double readPosition = 0.0;
-        double step = 1.0;
-        float gain = 1.0f;
-        float releaseGain = 1.0f;
-        float releaseStep = 0.0f;
+        double readPosition = 0.0;    // current playback position in frames
+        double step = 1.0;            // playback speed (pitch shift + rate conversion)
+        float gain = 1.0f;            // velocity-based volume
+        float releaseGain = 1.0f;     // fades from 1 to 0 during release
+        float releaseStep = 0.0f;     // per-sample decrement of releaseGain
     };
 
+    // WASAPI-based audio engine. Uses a dedicated render thread that waits on
+    // buffer events from the audio device, then fills audio buffers with mixed voice output.
     class NativeEngine
     {
     public:
+        // Allocates voice pool and output mix buffer. Does not open audio device yet.
         explicit NativeEngine(const EngineConfig& config)
             : config_(config)
         {
@@ -80,6 +88,8 @@ namespace
             Stop();
         }
 
+        // Initializes WASAPI, creates the render thread, and starts audio output.
+        // Returns 0 on success, -1 on failure.
         int Start()
         {
             {
@@ -124,6 +134,7 @@ namespace
             return 0;
         }
 
+        // Signals the render thread to stop, waits for it to join, then releases WASAPI resources.
         void Stop()
         {
             {
@@ -146,6 +157,7 @@ namespace
             started_ = false;
         }
 
+        // Removes all samples and resets all voices.
         void ClearSamples()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -154,6 +166,7 @@ namespace
                 voice = Voice{};
         }
 
+        // Copies a PCM sample into the engine's sample bank.
         int RegisterSample(const SampleDescriptor& descriptor, const float* interleaved, int sampleCount)
         {
             if (!interleaved || sampleCount <= 0 || descriptor.frameCount <= 0 || descriptor.channelCount <= 0)
@@ -182,6 +195,7 @@ namespace
             return 0;
         }
 
+        // Triggers a note. Finds best sample, acquires a voice, sets pitch/gain.
         int NoteOn(int midiNote, float velocityNormalized)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -213,6 +227,7 @@ namespace
             return 0;
         }
 
+        // Begins fade-out for all voices playing this note.
         void NoteOff(int midiNote)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -230,12 +245,14 @@ namespace
             }
         }
 
+        // Sets sustain pedal state.
         void SetSustain(bool sustainOn)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             sustainOn_ = sustainOn;
         }
 
+        // Copies last error message into buffer. Returns bytes written.
         int GetLastError(char* buffer, int capacity)
         {
             if (!buffer || capacity <= 0)
@@ -249,6 +266,9 @@ namespace
         }
 
     private:
+        // Sets up the WASAPI audio pipeline: gets default device, creates IAudioClient,
+        // configures 32-bit float format, creates event-driven buffer, and gets render client.
+        // Falls back from exclusive to shared mode if exclusive fails.
         HRESULT InitializeWasapi()
         {
             HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -357,6 +377,7 @@ namespace
             return S_OK;
         }
 
+        // Releases all WASAPI COM objects and closes the buffer event handle.
         void CleanupWasapi()
         {
             if (renderClient_)
@@ -380,6 +401,8 @@ namespace
             bufferFrameCount_ = 0;
         }
 
+        // Audio render thread. Waits on WASAPI buffer events, calculates how many
+        // frames need filling, renders voice audio into the buffer, then releases it.
         void RenderLoop()
         {
             CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -423,6 +446,8 @@ namespace
             CoUninitialize();
         }
 
+        // Mixes all active voices into the output buffer using linear interpolation.
+        // Applies velocity gain and quadratic release fade. Clamps output to [-1, 1].
         void Render(float* output, int frameCount)
         {
             const int outputChannels = std::max(1, config_.channelCount);
@@ -493,6 +518,8 @@ namespace
                 output[i] = std::clamp(outputMix_[i], -1.0f, 1.0f);
         }
 
+        // Finds the best sample for a note+velocity combo.
+        // Priority: exact root + velocity match > exact root + nearest velocity > nearest root.
         const SampleLayer* ChooseSample(int midiNote, float velocityNormalized) const
         {
             if (samples_.empty())
@@ -562,6 +589,7 @@ namespace
             return bestLayer ? bestLayer : best;
         }
 
+        // Returns how far velocity is from the sample's range. 0 = inside range.
         static int VelocityDistance(const SampleLayer& sample, int velocity)
         {
             if (velocity < sample.minVelocity)
@@ -571,6 +599,7 @@ namespace
             return 0;
         }
 
+        // Gets a free voice, or steals the oldest if all are busy.
         Voice* AcquireVoice()
         {
             for (auto& voice : voices_)
@@ -588,6 +617,7 @@ namespace
             return it != voices_.end() ? &(*it) : nullptr;
         }
 
+        // Stores an error message with optional HRESULT code for debugging.
         void SetError(const char* message, HRESULT hr = S_OK)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -620,8 +650,10 @@ namespace
     };
 }
 
+// DLL exports called from C# via P/Invoke (NativeAudioInterop.cs).
 extern "C"
 {
+    // Creates a new WASAPI engine. Returns null on failure.
     __declspec(dllexport) void* np_create_engine(const EngineConfig* config)
     {
         if (!config)

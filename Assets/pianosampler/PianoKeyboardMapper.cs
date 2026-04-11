@@ -71,6 +71,7 @@ public class PianoKeyboardMapper : MonoBehaviour
             Calibrate(leftAnchor.position, rightAnchor.position);
     }
 
+    // Takes two world-space edge points and builds 88 key strips between them.
     public void Calibrate(Vector3 leftEdge, Vector3 rightEdge)
     {
         if (!TryBuildStrips(leftEdge, rightEdge, 1f, out float totalWidth))
@@ -135,6 +136,8 @@ public class PianoKeyboardMapper : MonoBehaviour
             _glowStrips[keyIndex].enabled = false;
     }
 
+    // Calculates all 88 key positions, creates strip meshes, and builds the top line.
+    // White keys get simple boxes, black keys get inverted-T shapes.
     private bool TryBuildStrips(Vector3 leftEdge, Vector3 rightEdge, float alpha, out float totalWidth)
     {
         totalWidth = Vector3.Distance(leftEdge, rightEdge);
@@ -202,6 +205,8 @@ public class PianoKeyboardMapper : MonoBehaviour
         return true;
     }
 
+    // Creates the horizontal guide line at the top of the keyboard strip.
+    // Two lines: a soft glow behind and a bright sharp line on top.
     private void BuildTopLine(Vector3 leftEdge, Vector3 rightEdge, Vector3 kRight, Vector3 kForward, Vector3 kUp,
         float y, float stripeStart)
     {
@@ -363,6 +368,7 @@ public class PianoKeyboardMapper : MonoBehaviour
     /// Stem: from (topLine - stemHeight) to topLine, width = stemHW*2
     /// Cap:  from (topLine - stemHeight - capHeight) to (topLine - stemHeight), width = capHW*2
     /// </summary>
+    // Builds a T-shape mesh for black keys: narrow stem at top, wide cap hanging below.
     private Mesh BuildInvertedTMesh(string name, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
         float center, float stemHW, float capHW,
         float stripeStart, float topLine,
@@ -430,6 +436,7 @@ public class PianoKeyboardMapper : MonoBehaviour
         return mesh;
     }
 
+    // Builds a simple rectangular box mesh for white key strips.
     private Mesh BuildBoxMesh(string name, Vector3 origin, Vector3 kRight, Vector3 kForward, Vector3 kUp,
         float center, float halfWidth, float stripeStart, float yOffset, float thickness, float height)
     {
@@ -497,6 +504,8 @@ public class PianoKeyboardMapper : MonoBehaviour
         return count;
     }
 
+    // Returns the horizontal center of a key as a 0-1 fraction of keyboard width.
+    // Black keys are centered between their adjacent white keys.
     private static float NormalizedCenter(int midiNote)
     {
         if (NoteIsBlack(midiNote))

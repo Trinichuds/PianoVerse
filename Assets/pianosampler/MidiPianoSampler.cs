@@ -50,6 +50,7 @@ public class MidiPianoSampler : MonoBehaviour
         midiInput.SustainChanged -= OnSustainChanged;
     }
 
+    // Creates AudioSource GameObjects for polyphonic playback.
     private void CreateVoicePool()
     {
         for (int i = 0; i < voicePoolSize; i++)
@@ -75,6 +76,7 @@ public class MidiPianoSampler : MonoBehaviour
         }
     }
 
+    // Finds the matching sample (or nearest with pitch shift), gets a voice, and plays.
     private void OnNotePressed(int keyIndex, int midiNote, float velocityNormalized)
     {
         if (sampleBank == null) return;
@@ -170,6 +172,7 @@ public class MidiPianoSampler : MonoBehaviour
         activeVoicesByMidiNote.Remove(midiNote);
     }
 
+    // Returns an idle voice, or steals the oldest playing voice if all busy.
     private PianoVoice GetFreeVoice()
     {
         for (int i = 0; i < voicePool.Count; i++)
@@ -211,6 +214,7 @@ public class MidiPianoSampler : MonoBehaviour
         }
     }
 
+    // Calculates pitch multiplier: 2^(semitones/12) for resampling.
     private float GetPitchShift(int sampledMidiNote, int targetMidiNote)
     {
         int semitoneOffset = targetMidiNote - sampledMidiNote;

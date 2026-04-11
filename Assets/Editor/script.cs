@@ -10,6 +10,8 @@ public static class SalamanderSampleBankBuilder
     private static readonly Regex FilePattern =
         new Regex(@"^([A-G])(#?)(-?\d+)v(\d+)$", RegexOptions.IgnoreCase);
 
+    // Editor tool: picks a folder of Salamander wav files, parses their names
+    // to extract MIDI note and velocity layer, then creates a PianoSampleBank asset.
     [MenuItem("Tools/Piano/Build Salamander Sample Bank")]
     public static void BuildSampleBank()
     {
@@ -116,6 +118,7 @@ public static class SalamanderSampleBankBuilder
         Debug.Log($"Built PianoSampleBank: {savePath}");
     }
 
+    // Parses filenames like "A0v1", "C#4v3" into MIDI note number and velocity layer.
     private static bool TryParseFileName(string fileName, out int midiNote, out int layerIndex)
     {
         midiNote = -1;

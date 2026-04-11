@@ -16,33 +16,38 @@
 
 namespace
 {
+    // Audio backend type constants matching C# BackendKind enum
     constexpr int kBackendAuto = -1;
     constexpr int kBackendWasapiShared = 0;
     constexpr int kBackendWasapiExclusive = 1;
     constexpr int kBackendAsio = 2;
+    // Minimum volume floor so quiet notes are still audible
     constexpr float kVelocityFloor = 0.2f;
 
+    // Passed from C# via P/Invoke to configure the audio engine
     struct EngineConfig
     {
         int sampleRate;
         int channelCount;
         int maxVoices;
-        int backend;
+        int backend;              // BackendKind enum value
         int requestedBufferFrames;
-        int releaseFadeMs;
+        int releaseFadeMs;        // fade-out time when note is released
         char preferredOutputDeviceName[256];
     };
 
+    // Metadata for a single audio sample uploaded from Unity
     struct SampleDescriptor
     {
-        int rootMidiNote;
-        int minVelocity;
-        int maxVelocity;
-        int channelCount;
-        int sampleRate;
-        int frameCount;
+        int rootMidiNote;   // which piano key this sample was recorded from
+        int minVelocity;    // MIDI velocity range lower bound (1-127)
+        int maxVelocity;    // MIDI velocity range upper bound (1-127)
+        int channelCount;   // mono=1, stereo=2
+        int sampleRate;     // sample rate of the audio data
+        int frameCount;     // total audio frames in the sample
     };
 
+    // Stored sample data with PCM buffer, one per velocity layer per key
     struct SampleLayer
     {
         int rootMidiNote = 60;
@@ -51,26 +56,31 @@ namespace
         int channelCount = 2;
         int sampleRate = 48000;
         int frameCount = 0;
-        std::vector<float> interleaved;
+        std::vector<float> interleaved; // raw PCM data (interleaved channels)
     };
 
+    // A single playing note in the voice pool
     struct Voice
     {
-        bool active = false;
-        bool releasing = false;
-        int targetMidiNote = -1;
-        uint64_t startCounter = 0;
+        bool active = false;          // currently producing audio
+        bool releasing = false;       // fading out after note-off
+        int targetMidiNote = -1;      // which MIDI note this voice plays
+        uint64_t startCounter = 0;    // monotonic counter for voice-stealing priority
         const SampleLayer* sample = nullptr;
-        double readPosition = 0.0;
-        double step = 1.0;
-        float gain = 1.0f;
-        float releaseGain = 1.0f;
-        float releaseStep = 0.0f;
+        double readPosition = 0.0;    // current playback position in frames
+        double step = 1.0;            // playback speed (handles pitch shift + sample rate conversion)
+        float gain = 1.0f;            // velocity-based volume
+        float releaseGain = 1.0f;     // fades from 1 to 0 during release
+        float releaseStep = 0.0f;     // how much releaseGain decreases per sample
     };
 
+    // Main audio engine using JUCE for device management and audio output.
+    // Implements JUCE's AudioIODeviceCallback to render audio in real time.
+    // Manages a polyphonic voice pool, sample bank, and audio device lifecycle.
     class NativeEngine final : public juce::AudioIODeviceCallback
     {
     public:
+        // Allocates the voice pool based on config. Does not open any audio device yet.
         explicit NativeEngine(const EngineConfig& config)
             : config_(config),
               juceInitialiser_(std::make_unique<juce::ScopedJuceInitialiser_GUI>())
@@ -83,6 +93,9 @@ namespace
             Stop();
         }
 
+        // Opens the audio device and starts the audio callback.
+        // Tries the preferred backend/device first, falls back to defaults.
+        // Returns 0 on success, -1 on failure (check GetLastError).
         int Start()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -200,6 +213,7 @@ namespace
             return 0;
         }
 
+        // Stops audio output, removes callback, and closes the device.
         void Stop()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -211,6 +225,7 @@ namespace
             started_ = false;
         }
 
+        // Removes all uploaded samples and resets all voices.
         void ClearSamples()
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -219,6 +234,8 @@ namespace
                 voice = Voice{};
         }
 
+        // Copies a PCM sample into the engine's sample bank.
+        // Called once per velocity layer per key during initialization.
         int RegisterSample(const SampleDescriptor& descriptor, const float* interleaved, int sampleCount)
         {
             if (!interleaved || sampleCount <= 0 || descriptor.frameCount <= 0 || descriptor.channelCount <= 0)
@@ -247,6 +264,8 @@ namespace
             return 0;
         }
 
+        // Triggers a note. Finds the best matching sample, acquires a voice,
+        // and sets up pitch shift + gain. Pitch = 2^(semitones/12) for resampling.
         int NoteOn(int midiNote, float velocityNormalized)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -265,6 +284,7 @@ namespace
             }
 
             double deviceRate = actualSampleRate_ > 0.0 ? actualSampleRate_ : static_cast<double>(config_.sampleRate);
+            // Pitch shift: if sample root differs from target note, resample by semitone ratio
             float pitch = std::pow(2.0f, static_cast<float>(midiNote - sample->rootMidiNote) / 12.0f);
 
             voice->active = true;
@@ -280,6 +300,8 @@ namespace
             return 0;
         }
 
+        // Begins fade-out for all voices playing this note.
+        // Fade duration is set by config.releaseFadeMs (clamped 20-4000ms).
         void NoteOff(int midiNote)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -298,12 +320,14 @@ namespace
             }
         }
 
+        // Sets sustain pedal state. When on, note-off is deferred.
         void SetSustain(bool sustainOn)
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
             sustainOn_ = sustainOn;
         }
 
+        // Copies the last error message into the provided buffer. Returns bytes written.
         int GetLastError(char* buffer, int capacity)
         {
             if (!buffer || capacity <= 0)
@@ -316,11 +340,13 @@ namespace
             return copyLength;
         }
 
+        // JUCE audio callback, called by the audio thread to fill output buffers.
         void audioDeviceIOCallbackWithContext(const float* const*, int, float* const* outputChannelData, int numOutputChannels, int numSamples, const juce::AudioIODeviceCallbackContext&) override
         {
             RenderBlock(outputChannelData, numOutputChannels, numSamples);
         }
 
+        // Called when device starts. Captures actual sample rate and buffer size.
         void audioDeviceAboutToStart(juce::AudioIODevice* device) override
         {
             std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -334,6 +360,8 @@ namespace
         }
 
     private:
+        // Selects the best audio device type based on config.backend.
+        // Auto mode: tries ASIO first, then Low Latency, Exclusive, Windows Audio.
         juce::AudioIODeviceType* ChooseDeviceType(juce::OwnedArray<juce::AudioIODeviceType>& deviceTypes, juce::String& preferredDeviceName) const
         {
             if (config_.backend == kBackendAuto)
@@ -378,6 +406,7 @@ namespace
             return deviceTypes.isEmpty() ? nullptr : deviceTypes[0];
         }
 
+        // Finds a device type whose name contains the given fragment (case insensitive).
         juce::AudioIODeviceType* FindDeviceType(juce::OwnedArray<juce::AudioIODeviceType>& deviceTypes, const juce::String& nameFragment) const
         {
             for (auto* type : deviceTypes)
@@ -389,11 +418,13 @@ namespace
             return nullptr;
         }
 
+        // Returns the preferred device name from config, trimmed.
         juce::String GetConfiguredDeviceName() const
         {
             return juce::String::fromUTF8(config_.preferredOutputDeviceName).trim();
         }
 
+        // Builds a comma-separated list of device type names for error messages.
         std::string DescribeDeviceTypes(const juce::OwnedArray<juce::AudioIODeviceType>& deviceTypes) const
         {
             if (deviceTypes.isEmpty())
@@ -413,6 +444,8 @@ namespace
             return stream.str();
         }
 
+        // Picks an output device by name. Tries exact match, then substring match,
+        // then ASIO-specific heuristics (USB, Focusrite), then first available.
         juce::String ChooseOutputDeviceName(const juce::StringArray& devices, const juce::String& overrideName = {}) const
         {
             const juce::String configuredName = overrideName.isNotEmpty() ? overrideName : GetConfiguredDeviceName();
@@ -449,6 +482,9 @@ namespace
             return devices[0];
         }
 
+        // Mixes all active voices into the output buffer.
+        // For each voice: interpolates between sample frames, applies gain and release fade,
+        // then deinterleaves into per-channel output arrays. Output is clamped to [-1, 1].
         void RenderBlock(float* const* outputChannelData, int numOutputChannels, int numSamples)
         {
             const int outputChannels = std::max(1, numOutputChannels);
@@ -533,6 +569,8 @@ namespace
             }
         }
 
+        // Finds the best sample for a given note and velocity.
+        // Priority: exact root + exact velocity > exact root + nearest velocity > nearest root.
         const SampleLayer* ChooseSample(int midiNote, float velocityNormalized) const
         {
             if (samples_.empty())
@@ -602,6 +640,7 @@ namespace
             return bestLayer != nullptr ? bestLayer : best;
         }
 
+        // Returns how far the velocity is from the sample's velocity range. 0 = inside range.
         static int VelocityDistance(const SampleLayer& sample, int velocity)
         {
             if (velocity < sample.minVelocity)
@@ -611,6 +650,7 @@ namespace
             return 0;
         }
 
+        // Gets a free voice, or steals the oldest active voice if none available.
         Voice* AcquireVoice()
         {
             for (auto& voice : voices_)
@@ -651,8 +691,11 @@ namespace
     };
 }
 
+// DLL exports called from C# via P/Invoke (NativeAudioInterop.cs).
+// All functions take an opaque engine pointer returned by np_create_engine.
 extern "C"
 {
+    // Creates a new engine instance. Returns null on failure.
     __declspec(dllexport) void* np_create_engine(const EngineConfig* config)
     {
         if (config == nullptr)
@@ -668,11 +711,13 @@ extern "C"
         }
     }
 
+    // Destroys the engine and frees all resources.
     __declspec(dllexport) void np_destroy_engine(void* engine)
     {
         delete static_cast<NativeEngine*>(engine);
     }
 
+    // Opens the audio device and starts playback. Returns 0 on success.
     __declspec(dllexport) int np_start_engine(void* engine)
     {
         if (engine == nullptr)
@@ -680,6 +725,7 @@ extern "C"
         return static_cast<NativeEngine*>(engine)->Start();
     }
 
+    // Stops audio output and closes the device.
     __declspec(dllexport) void np_stop_engine(void* engine)
     {
         if (engine == nullptr)
@@ -687,6 +733,7 @@ extern "C"
         static_cast<NativeEngine*>(engine)->Stop();
     }
 
+    // Removes all registered samples from the engine.
     __declspec(dllexport) void np_clear_samples(void* engine)
     {
         if (engine == nullptr)
@@ -694,6 +741,7 @@ extern "C"
         static_cast<NativeEngine*>(engine)->ClearSamples();
     }
 
+    // Uploads one sample (one velocity layer for one key) to the engine.
     __declspec(dllexport) int np_register_sample(void* engine, const SampleDescriptor* descriptor, const float* interleavedData, int sampleCount)
     {
         if (engine == nullptr || descriptor == nullptr)
@@ -701,6 +749,7 @@ extern "C"
         return static_cast<NativeEngine*>(engine)->RegisterSample(*descriptor, interleavedData, sampleCount);
     }
 
+    // Triggers a note with the given velocity (0.0 to 1.0).
     __declspec(dllexport) int np_note_on(void* engine, int midiNote, float velocityNormalized)
     {
         if (engine == nullptr)
@@ -708,6 +757,7 @@ extern "C"
         return static_cast<NativeEngine*>(engine)->NoteOn(midiNote, velocityNormalized);
     }
 
+    // Releases a note, starting the fade-out envelope.
     __declspec(dllexport) void np_note_off(void* engine, int midiNote)
     {
         if (engine == nullptr)
@@ -715,6 +765,7 @@ extern "C"
         static_cast<NativeEngine*>(engine)->NoteOff(midiNote);
     }
 
+    // Sets sustain pedal state (0 = off, nonzero = on).
     __declspec(dllexport) void np_set_sustain(void* engine, int sustainOn)
     {
         if (engine == nullptr)
@@ -722,6 +773,7 @@ extern "C"
         static_cast<NativeEngine*>(engine)->SetSustain(sustainOn != 0);
     }
 
+    // Retrieves the last error message string for debugging.
     __declspec(dllexport) int np_get_last_error(void* engine, char* buffer, int capacity)
     {
         if (engine == nullptr)
