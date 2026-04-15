@@ -115,7 +115,11 @@ public class NoteMapPlayer : MonoBehaviour
     private List<NoteStep> _steps;
     private int _currentStepIndex;
     private readonly HashSet<int> _heldKeys = new();
+    // Fresh presses belong to the currently active practice step only. They expire quickly so
+    // held or stale keys cannot accidentally satisfy a later step.
     private readonly Dictionary<int, float> _freshPresses = new(); // key → Time.time when pressed
+    // Early presses buffer slightly-ahead input for upcoming steps. We promote them only when
+    // that exact step activates, which keeps fast players from feeling "dropped" by practice mode.
     private readonly Dictionary<int, (HashSet<int> keys, float time)> _earlyPresses = new(); // stepIndex → (keys, Time.time when first buffered)
     private bool _stepSatisfied;
     private float _stepStartRealTime; // Time.time when current step became active
@@ -418,6 +422,8 @@ public class NoteMapPlayer : MonoBehaviour
                 ? _steps[_currentStepIndex + 1].time
                 : CurrentMap.durationSeconds;
 
+            // Once the current step is satisfied we let playback run forward until the next step
+            // boundary, instead of staying frozen through empty time between chords.
             if (_playbackTime >= targetTime)
             {
                 _playbackTime = targetTime;
@@ -434,6 +440,8 @@ public class NoteMapPlayer : MonoBehaviour
                 _stepSatisfied = false;
                 _freshPresses.Clear();
 
+                // Carry only explicitly buffered input into the new step. Reusing raw held keys
+                // here would make repeated notes/chords auto-complete too easily.
                 // Apply only explicitly buffered early presses for this step (if not expired)
                 if (_earlyPresses.TryGetValue(_currentStepIndex, out var early))
                 {
@@ -450,6 +458,8 @@ public class NoteMapPlayer : MonoBehaviour
         }
         else
         {
+            // Practice mode requires recent presses for every key in the step. That keeps the mode
+            // intentional: the player must actively play the chord instead of parking fingers down.
             // Freeze — check if all required keys were freshly pressed (and not expired)
             var step = _steps[_currentStepIndex];
             bool allPressed = true;
@@ -486,6 +496,8 @@ public class NoteMapPlayer : MonoBehaviour
             return;
         }
 
+        // Look ahead a few steps so slightly early input still feels responsive. We cap the scan
+        // to avoid matching a repeated pitch far later in the song by accident.
         // Look ahead: check upcoming steps within earlyDetectionWindow (real-time based)
         // Only look ahead a few steps — no point scanning 100 steps
         int maxLookAhead = Mathf.Min(_currentStepIndex + 4, _steps.Count);
@@ -585,6 +597,8 @@ public class NoteMapPlayer : MonoBehaviour
             if (kvp.Value > 0)
                 GuideNoteOff?.Invoke(kvp.Key);
         }
+        // ResetState handles the playback cursor; this method is only responsible for clearing
+        // whatever guide output is currently live when playback is interrupted or switched.
         _guideRefCount.Clear();
         _guideEnds.Clear();
     }
@@ -659,3 +673,4 @@ public class NoteMapPlayer : MonoBehaviour
         StepChanged?.Invoke(_currentStepIndex, step.keys);
     }
 }
+

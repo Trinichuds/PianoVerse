@@ -152,6 +152,8 @@ public class VRMenuPanel : MonoBehaviour
             yPos -= ArrowH;
         }
 
+        // Keep a fixed set of visible rows and only swap their contents. That is simpler than a
+        // full scroll view and matches thumbstick-driven, one-row-at-a-time navigation.
         // Item slots (fixed number)
         _slotTexts = new TextMeshProUGUI[visibleCount];
         _slotBGs = new Image[visibleCount];
@@ -224,6 +226,8 @@ public class VRMenuPanel : MonoBehaviour
         else if (stick.y < -0.4f)
             _selectedIndex = Mathf.Min(_items.Length - 1, _selectedIndex + 1);
 
+        // Snap the viewport instead of smooth scrolling. In VR this feels more predictable than
+        // animating a scroll rect for each thumbstick notch.
         // Keep selection within visible window
         EnsureSelectionVisible();
     }
@@ -362,3 +366,4 @@ public class VRMenuPanel : MonoBehaviour
         rt.anchoredPosition = new Vector2(0f, yBottom + h * 0.5f);
     }
 }
+

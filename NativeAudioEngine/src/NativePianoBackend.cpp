@@ -331,6 +331,8 @@ namespace
                 nullptr
             );
 
+            // Exclusive mode gives lower latency when it works, but many devices reject it.
+            // Falling back here keeps the legacy backend usable on more machines.
             if (FAILED(hr) && shareMode == AUDCLNT_SHAREMODE_EXCLUSIVE)
             {
                 config_.backend = kBackendWasapiShared;
@@ -424,6 +426,8 @@ namespace
                     continue;
                 }
 
+                // Padding is the number of frames already queued to the device, so the writable
+                // region is buffer size minus padding.
                 UINT32 framesToWrite = bufferFrameCount_ > padding ? bufferFrameCount_ - padding : 0;
                 if (framesToWrite == 0)
                     continue;
@@ -481,6 +485,8 @@ namespace
 
                     float frac = static_cast<float>(voice.readPosition - static_cast<double>(baseIndex));
 
+                    // Keep the mixer structure aligned with the JUCE backend: mix interleaved once,
+                    // then hand the final interleaved block to the platform output API.
                     for (int channel = 0; channel < outputChannels; ++channel)
                     {
                         int sampleChannel = inputChannels == 1 ? 0 : std::min(channel, inputChannels - 1);
@@ -734,3 +740,4 @@ extern "C"
         return static_cast<NativeEngine*>(engine)->GetLastError(buffer, capacity);
     }
 }
+

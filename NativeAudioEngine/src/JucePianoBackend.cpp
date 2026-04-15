@@ -165,6 +165,8 @@ namespace
                 &setup
             );
 
+            // First try the exact requested sample rate / buffer. If the device rejects that
+            // combination, retry with JUCE-managed defaults so startup can still succeed.
             if (result.isNotEmpty())
             {
                 juce::AudioDeviceManager::AudioDeviceSetup relaxedSetup = setup;
@@ -519,6 +521,8 @@ namespace
 
                         float frac = static_cast<float>(voice.readPosition - static_cast<double>(baseIndex));
 
+                        // We mix into a single interleaved scratch buffer first, then fan back out
+                        // into JUCE's per-channel outputs at the end of the block.
                         for (int channel = 0; channel < outputChannels; ++channel)
                         {
                             int sampleChannel = inputChannels == 1 ? 0 : std::min(channel, inputChannels - 1);
@@ -609,6 +613,8 @@ namespace
                 }
                 else if (!exactRootFound)
                 {
+                    // Before we find an exact root note, prioritize pitch proximity. Velocity only
+                    // acts as a tie-breaker because wrong pitch is much more obvious than a layer mismatch.
                     if (best == nullptr || distance < bestDistance || (distance == bestDistance && velocityMatch))
                     {
                         best = &sample;
@@ -659,6 +665,8 @@ namespace
                     return &voice;
             }
 
+            // Oldest-voice stealing is simple but predictable, which is good enough for piano-style
+            // material where voices naturally decay and overlaps are short-lived.
             auto it = std::min_element(
                 voices_.begin(),
                 voices_.end(),
@@ -781,3 +789,4 @@ extern "C"
         return static_cast<NativeEngine*>(engine)->GetLastError(buffer, capacity);
     }
 }
+

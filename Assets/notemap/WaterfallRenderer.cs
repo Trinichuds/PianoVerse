@@ -92,6 +92,8 @@ public class WaterfallRenderer : MonoBehaviour
         _kRight = (mapper.TopLineRight - mapper.TopLineLeft).normalized;
         _kUp = Vector3.up;
 
+        // Bars are keyed by note index rather than piano key, so repeated notes on the same pitch
+        // can overlap without fighting over a single visual instance.
         // Release expired bars
         _removeList.Clear();
         foreach (var kvp in _activeMap)
@@ -107,6 +109,8 @@ public class WaterfallRenderer : MonoBehaviour
         foreach (int key in _removeList)
             _activeMap.Remove(key);
 
+        // Activate notes only once they enter the look-ahead window. Pooling keeps this cheap even
+        // when dense passages bring many bars on screen at the same time.
         // Activate new bars entering look-ahead
         while (_nextNoteIndex < notes.Length)
         {
@@ -180,6 +184,8 @@ public class WaterfallRenderer : MonoBehaviour
         bar.mr.sharedMaterial = isBlack ? _blackMat : _whiteMat;
         bar.go.SetActive(true);
 
+        // The separate head makes the onset edge easier to read in VR. The body can shrink at the
+        // play line while the head still marks the note's actual leading edge.
         // Note head — darker cap at the note's true bottom (unclamped)
         if (bar.headGo != null)
         {
@@ -245,6 +251,8 @@ public class WaterfallRenderer : MonoBehaviour
         var col = go.GetComponent<Collider>();
         if (col != null) Destroy(col);
 
+        // The head is a separate object because it follows different visual rules from the body
+        // once the bar reaches the play line.
         // Note head — separate object so it has independent transform
         var headGo = new GameObject("WaterfallHead");
         headGo.transform.SetParent(transform, false);
@@ -303,3 +311,4 @@ public class WaterfallRenderer : MonoBehaviour
         ResetBars();
     }
 }
+

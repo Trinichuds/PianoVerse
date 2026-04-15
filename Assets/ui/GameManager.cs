@@ -182,6 +182,7 @@ public class GameManager : MonoBehaviour
     // -------------------------------------------------------------------------
 
     // Creates all VRMenuPanel instances and GameHUD at runtime. No prefabs needed.
+    // Keeping this procedural has made the demo scene easier to duplicate/reset while iterating.
     private void BuildMenus()
     {
         // Main Menu
@@ -316,7 +317,9 @@ public class GameManager : MonoBehaviour
         StartSong();
     }
 
-    // Cycles play mode: Practice > RealTime > Watch > Practice. Restarts song if playing.
+    // Cycles play mode: Practice > RealTime > Watch > Practice.
+    // If a song is already running we reload it so guide timing, waterfall state, and scoring all
+    // restart from a clean baseline under the new mode.
     public void ToggleMode()
     {
         if (player == null) return;
@@ -450,6 +453,8 @@ public class GameManager : MonoBehaviour
             // MapSelect & Options: VRMenuPanel handles B → OnBack
         }
 
+        // Startup order is not guaranteed in the scene, so keep retrying until the loader exists
+        // and has finished scanning StreamingAssets.
         // Retry map loader subscription
         if (!_mapsReady && NoteMapLoader.Instance != null)
         {
@@ -478,3 +483,4 @@ public class GameManager : MonoBehaviour
         return false;
     }
 }
+
