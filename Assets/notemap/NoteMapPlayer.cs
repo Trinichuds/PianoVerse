@@ -44,6 +44,8 @@ public class NoteMapPlayer : MonoBehaviour
     [Header("Step Grouping — Practice")]
     [Tooltip("Notes within this many seconds of each other form one step.")]
     public float stepTolerance = 0.080f;
+    [Tooltip("How far ahead (in seconds) a key press can register for an upcoming step.")]
+    public float earlyDetectionWindow = 0.200f;
 
     // -------------------------------------------------------------------------
     // Public state
@@ -113,8 +115,10 @@ public class NoteMapPlayer : MonoBehaviour
     private List<NoteStep> _steps;
     private int _currentStepIndex;
     private readonly HashSet<int> _heldKeys = new();
-    private readonly HashSet<int> _freshPresses = new(); // keys pressed during current step
-    private bool _stepSatisfied; // all keys in current step are pressed
+    private readonly Dictionary<int, float> _freshPresses = new(); // key → Time.time when pressed
+    private readonly Dictionary<int, (HashSet<int> keys, float time)> _earlyPresses = new(); // stepIndex → (keys, Time.time when first buffered)
+    private bool _stepSatisfied;
+    private float _stepStartRealTime; // Time.time when current step became active
 
     private class NoteStep
     {
@@ -375,12 +379,37 @@ public class NoteMapPlayer : MonoBehaviour
     // Practice mode
     // -------------------------------------------------------------------------
 
-    // When step is satisfied, advances time to next step. Otherwise freezes and waits.
+    private readonly List<int> _expiredKeys = new(); // temp list for expired key removal
+
     private void UpdatePractice()
     {
         if (_steps == null || _currentStepIndex >= _steps.Count) return;
 
-        // Once step is satisfied, advance playbackTime toward next step
+        float now = Time.time;
+
+        // Expire stale fresh presses — only when step is NOT yet satisfied
+        if (!_stepSatisfied)
+        {
+            _expiredKeys.Clear();
+            foreach (var kvp in _freshPresses)
+            {
+                if (now - kvp.Value > earlyDetectionWindow)
+                    _expiredKeys.Add(kvp.Key);
+            }
+            foreach (int k in _expiredKeys)
+                _freshPresses.Remove(k);
+        }
+
+        // Expire stale early presses for future steps
+        _expiredKeys.Clear();
+        foreach (var kvp in _earlyPresses)
+        {
+            if (now - kvp.Value.time > earlyDetectionWindow)
+                _expiredKeys.Add(kvp.Key);
+        }
+        foreach (int k in _expiredKeys)
+            _earlyPresses.Remove(k);
+
         if (_stepSatisfied)
         {
             _playbackTime += Time.deltaTime;
@@ -404,17 +433,29 @@ public class NoteMapPlayer : MonoBehaviour
 
                 _stepSatisfied = false;
                 _freshPresses.Clear();
+
+                // Apply only explicitly buffered early presses for this step (if not expired)
+                if (_earlyPresses.TryGetValue(_currentStepIndex, out var early))
+                {
+                    if (now - early.time <= earlyDetectionWindow)
+                    {
+                        foreach (int k in early.keys)
+                            _freshPresses[k] = now;
+                    }
+                    _earlyPresses.Remove(_currentStepIndex);
+                }
+
                 FireStepChanged();
             }
         }
         else
         {
-            // Freeze — check if all required keys were freshly pressed this step
+            // Freeze — check if all required keys were freshly pressed (and not expired)
             var step = _steps[_currentStepIndex];
             bool allPressed = true;
             foreach (int k in step.keys)
             {
-                if (!_freshPresses.Contains(k))
+                if (!_freshPresses.ContainsKey(k))
                 {
                     allPressed = false;
                     break;
@@ -426,21 +467,44 @@ public class NoteMapPlayer : MonoBehaviour
         }
     }
 
-    // Checks if a pressed key is in the current step. Fires correct/wrong events.
+    // Checks pressed key against current step and upcoming steps.
+    // - Current step: registers as fresh press with timestamp
+    // - Upcoming steps within earlyDetectionWindow: buffered for when that step activates
+    // - Also works when current step is already satisfied (player rushing ahead)
     private void CheckPracticeInput(int keyIndex)
     {
         if (_steps == null || _currentStepIndex >= _steps.Count) return;
 
-        var step = _steps[_currentStepIndex];
-        bool isRequired = Array.IndexOf(step.keys, keyIndex) >= 0;
+        float now = Time.time;
 
-        if (isRequired)
+        // Check current step
+        var step = _steps[_currentStepIndex];
+        if (Array.IndexOf(step.keys, keyIndex) >= 0)
         {
-            _freshPresses.Add(keyIndex);
+            _freshPresses[keyIndex] = now;
             CorrectKeyPressed?.Invoke(keyIndex);
+            return;
         }
-        else
-            WrongKeyPressed?.Invoke(keyIndex);
+
+        // Look ahead: check upcoming steps within earlyDetectionWindow (real-time based)
+        // Only look ahead a few steps — no point scanning 100 steps
+        int maxLookAhead = Mathf.Min(_currentStepIndex + 4, _steps.Count);
+        for (int i = _currentStepIndex + 1; i < maxLookAhead; i++)
+        {
+            if (Array.IndexOf(_steps[i].keys, keyIndex) >= 0)
+            {
+                if (!_earlyPresses.TryGetValue(i, out var entry))
+                {
+                    entry = (new HashSet<int>(), now);
+                    _earlyPresses[i] = entry;
+                }
+                entry.keys.Add(keyIndex);
+                CorrectKeyPressed?.Invoke(keyIndex);
+                return;
+            }
+        }
+
+        WrongKeyPressed?.Invoke(keyIndex);
     }
 
     // -------------------------------------------------------------------------
@@ -577,6 +641,8 @@ public class NoteMapPlayer : MonoBehaviour
         _guideRefCount.Clear();
         _heldKeys.Clear();
         _freshPresses.Clear();
+        _earlyPresses.Clear();
+        _expiredKeys.Clear();
 
         PerfectCount = 0;
         GreatCount   = 0;
@@ -587,6 +653,7 @@ public class NoteMapPlayer : MonoBehaviour
 
     private void FireStepChanged()
     {
+        _stepStartRealTime = Time.time;
         if (_steps == null || _currentStepIndex >= _steps.Count) return;
         var step = _steps[_currentStepIndex];
         StepChanged?.Invoke(_currentStepIndex, step.keys);
